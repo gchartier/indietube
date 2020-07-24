@@ -1,13 +1,27 @@
 import React from "react";
+import styled from "styled-components";
 
 function Header() {
-  return (
-    <header className="App-header">
-      <h1>
-        Indie<span className="primaryColor1">Tube</span>
-      </h1>
-    </header>
-  );
+    const StyledHeader = styled.header`
+        text-align: left;
+        padding-left: 2%;
+    `;
+
+    const H1 = styled.h1`
+        font-size: 3rem;
+    `;
+
+    const PrimarySpan = styled.span`
+        color: #ffce80;
+    `;
+
+    return (
+        <StyledHeader>
+            <H1>
+                Indie<PrimarySpan>Tube</PrimarySpan>
+            </H1>
+        </StyledHeader>
+    );
 }
 
 export default Header;
