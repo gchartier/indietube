@@ -1,11 +1,34 @@
 import React from "react";
 import VideoResult from "./VideoResult";
+import styled from "styled-components";
 
 function ResultList(props) {
+    const StyledResults = styled.div`
+        background-color: white;
+        width: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    `;
+
     return (
-        <div className="resultList">
-            {/* props.results.forEach(element => {<VideoResult />}); */}
-        </div>
+        <StyledResults>
+            {props.results.map((result) => {
+                return (
+                    <VideoResult
+                        title={result.title}
+                        thumbnailSrc={result.thumbnailSrc}
+                        thumbnailTime={result.thumbnailTime}
+                        views={result.views}
+                        likes={result.likes}
+                        dislikes={result.dislikes}
+                        channelIcon={result.channelIcon}
+                        channelName={result.channelName}
+                        channelSubs={result.channelSubs}
+                    />
+                );
+            })}
+        </StyledResults>
     );
 }
 
