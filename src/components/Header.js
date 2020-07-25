@@ -8,7 +8,7 @@ function Header() {
     `;
 
     const H1 = styled.h1`
-        font-size: 3rem;
+        font-size: 2rem;
     `;
 
     const PrimarySpan = styled.span`

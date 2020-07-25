@@ -5,23 +5,32 @@ import styled from "styled-components";
 function Search() {
     const SearchContainer = styled.div`
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
         margin-top: 2%;
-        padding: 25px 0 25px 0;
-        width: 50%;
+        padding: 5% 0 5% 0;
+        width: 95%;
+        max-width: 500px;
         border-top-left-radius: 25px;
         border-top-right-radius: 25px;
         background-color: white;
         border-bottom: 1px solid black;
     `;
 
+    const InputContainer = styled.div`
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+    `;
+
     const SearchInput = styled.input`
         border-radius: 25px;
         border: solid black 2.5px;
         padding: 10px;
-        width: 40%;
-        height: 2rem;
+        width: 70%;
+        height: 1rem;
         font-size: 1.5rem;
     `;
 
@@ -31,15 +40,34 @@ function Search() {
         cursor: pointer;
     `;
 
+    const ResultsContainer = styled.div`
+        display: flex;
+        justify-content: space-evenly;
+        width: 100%;
+    `;
+
     const SearchResults = styled.p`
-        font-size: 1.5rem;
+        font-size: 1.3rem;
+        padding: 0;
+        margin: 2% 0 0 0;
+    `;
+
+    const ResultsFiltered = styled.p`
+        font-size: 1.3rem;
+        padding: 0;
+        margin: 2% 0 0 0;
     `;
 
     return (
         <SearchContainer>
-            <SearchInput />
-            <SearchIcon src={searchIcon} alt="Submit Search" />
-            <SearchResults>0 Results</SearchResults>
+            <InputContainer>
+                <SearchInput />
+                <SearchIcon src={searchIcon} alt="Submit Search" />
+            </InputContainer>
+            <ResultsContainer>
+                <SearchResults>2 Results</SearchResults>
+                <ResultsFiltered>5 Filtered</ResultsFiltered>
+            </ResultsContainer>
         </SearchContainer>
     );
 }
