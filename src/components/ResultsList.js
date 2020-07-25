@@ -5,7 +5,8 @@ import styled from "styled-components";
 function ResultList(props) {
     const StyledResults = styled.div`
         background-color: white;
-        width: 50%;
+        width: 95%;
+        max-width: 500px;
         display: flex;
         flex-direction: column;
         align-items: center;
