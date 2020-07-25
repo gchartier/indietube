@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 function VideoResult(props) {
     const ResultContainer = styled.div`
-        width: 80%;
+        width: 95%;
         border-radius: 25px;
         background-color: white;
         box-shadow: 0 2.8px 2.2px rgba(0, 0, 0, 0.034),
@@ -15,24 +15,55 @@ function VideoResult(props) {
         margin: 3% 0 3% 0;
     `;
 
-    const ResultThumbnail = styled.div``;
+    const ResultThumbnail = styled.div`
+        position: relative;
+    `;
 
     const ThumbnailImage = styled.img`
+        width: 95%;
         height: 200px;
     `;
 
+    const ThumbnailTime = styled.div`
+        background-color: black;
+        position: absolute;
+        bottom: 5%;
+        right: 5%;
+    `;
+
+    const Time = styled.p`
+        color: white;
+        font-size: 0.8rem;
+        padding: 3px;
+        margin: 0;
+    `;
+
+    const ChannelDetails = styled.div`
+        display: flex;
+        align-items: center;
+        margin-left: 5%;
+    `;
+
     const ChannelImage = styled.img`
-        height: 50px;
+        height: 40px;
+        width: 40px;
+        border-radius: 50%;
     `;
 
     return (
         <ResultContainer>
             <ResultThumbnail>
                 <ThumbnailImage src={props.thumbnailSrc} />
-                <div className="thumbnailTime">
-                    <p>{props.thumbnailTime}</p>
-                </div>
+                <ThumbnailTime>
+                    <Time>{props.thumbnailTime}</Time>
+                </ThumbnailTime>
             </ResultThumbnail>
+            <ChannelDetails>
+                <ChannelImage src={props.channelIcon} alt="Channel Icon" />
+                <p>
+                    {props.channelName} - {props.channelSubs}
+                </p>
+            </ChannelDetails>
             <div className="resultStats">
                 <p>{props.views} Views</p>
                 <p>{props.likes} Likes</p>
@@ -51,12 +82,6 @@ function VideoResult(props) {
             </div>
             <div className="resultTitle">
                 <p>{props.title}</p>
-                <div className="channelDetails">
-                    <ChannelImage src={props.channelIcon} alt="Channel Icon" />
-                    <p>
-                        {props.channelName} - {props.channelSubs}
-                    </p>
-                </div>
             </div>
         </ResultContainer>
     );
