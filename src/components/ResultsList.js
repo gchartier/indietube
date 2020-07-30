@@ -2,30 +2,28 @@ import React from "react";
 import VideoResult from "./VideoResult";
 import styled from "styled-components";
 
-function ResultList(props) {
-    const StyledResults = styled.div`
-        background-color: white;
-        width: 95%;
-        max-width: 500px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    `;
+const StyledResults = styled.div`
+    background-color: white;
+    width: 95%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+`;
 
+function ResultList(props) {
     return (
         <StyledResults>
             {props.results.map((result) => {
                 return (
                     <VideoResult
+                        key={result.id}
                         title={result.title}
-                        thumbnailSrc={result.thumbnailSrc}
-                        thumbnailTime={result.thumbnailTime}
+                        thumbnail={result.thumbnail}
                         views={result.views}
                         likes={result.likes}
                         dislikes={result.dislikes}
-                        channelIcon={result.channelIcon}
-                        channelName={result.channelName}
-                        channelSubs={result.channelSubs}
+                        channel={result.channel}
                     />
                 );
             })}
