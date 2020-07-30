@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import searchIcon from "../assets/searchIcon.svg";
 import styled from "styled-components";
 
