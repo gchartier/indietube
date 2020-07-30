@@ -1,20 +1,20 @@
 import React from "react";
 import styled from "styled-components";
 
+const StyledHeader = styled.header`
+    text-align: left;
+    padding-left: 2%;
+`;
+
+const H1 = styled.h1`
+    font-size: 2rem;
+`;
+
+const PrimarySpan = styled.span`
+    color: #ffce80;
+`;
+
 function Header() {
-    const StyledHeader = styled.header`
-        text-align: left;
-        padding-left: 2%;
-    `;
-
-    const H1 = styled.h1`
-        font-size: 2rem;
-    `;
-
-    const PrimarySpan = styled.span`
-        color: #ffce80;
-    `;
-
     return (
         <StyledHeader>
             <H1>

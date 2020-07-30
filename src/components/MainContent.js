@@ -6,30 +6,46 @@ import axios from "axios";
 
 const results = [
     {
-        thumbnailSrc:
-            "https://images.unsplash.com/photo-1549281899-f75600a24107?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1951&q=80",
-        thumbnailTime: "10:10",
+        id: "xzy",
+        thumbnail: {
+            url:
+                "https://images.unsplash.com/photo-1549281899-f75600a24107?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1951&q=80",
+            width: 120,
+            height: 90,
+            time: "10:10",
+        },
         views: "1000",
         likes: "25",
         dislikes: "15",
         title: "Hello thereeeeeee",
-        channelIcon:
-            "https://images.unsplash.com/photo-1557296387-5358ad7997bb?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=900&q=60",
-        channelName: "Test 1234",
-        channelSubs: "500",
+        channel: {
+            id: "123",
+            icon:
+                "https://images.unsplash.com/photo-1557296387-5358ad7997bb?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=900&q=60",
+            name: "Test 1234",
+            subs: "500",
+        },
     },
     {
-        thumbnailSrc:
-            "https://images.unsplash.com/photo-1520531158340-44015069e78e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2038&q=80",
-        thumbnailTime: "10:50",
+        id: "abc",
+        thumbnail: {
+            url:
+                "https://images.unsplash.com/photo-1520531158340-44015069e78e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2038&q=80",
+            width: 120,
+            height: 90,
+            time: "10:50",
+        },
         views: "1000",
         likes: "25",
         dislikes: "15",
         title: "BISHHHHHHHHHH",
-        channelIcon:
-            "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=900&q=60",
-        channelName: "REEEEEEE",
-        channelSubs: "512",
+        channel: {
+            id: "1234",
+            icon:
+                "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=900&q=60",
+            name: "REEEEEEE",
+            subs: "512",
+        },
     },
 ];
 
@@ -59,16 +75,63 @@ class MainContent extends Component {
     }
 
     handleSearchSubmit(event) {
-        alert("A search was submitted: " + this.state.searchQuery);
         event.preventDefault();
         axios
             .get(
                 "https://www.googleapis.com/youtube/v3/search?q=" +
                     this.state.searchQuery +
-                    "&key=[API KEY HERE]"
+                    "&key=" +
+                    process.env.REACT_APP_YOUTUBE_DATA_API_KEY +
+                    "&part=snippet" +
+                    "&type=video" +
+                    "&fields=items(id,snippet(publishedAt,channelId,title,channelTitle,publishTime),snippet/thumbnails(medium))"
             )
             .then((response) => {
-                console.log(response.data);
+                const results = [];
+
+                response.data.items.forEach((item) => {
+                    results.push({
+                        id: item.id.videoId,
+                        title: item.snippet.title,
+                        publishDate: item.snippet.publishedAt,
+                        publishTime: item.snippet.publishTime,
+                        channel: {
+                            id: item.snippet.channelId,
+                            name: item.snippet.channelTitle,
+                        },
+                        thumbnail: item.snippet.thumbnails.medium,
+                    });
+                });
+
+                axios
+                    .get(
+                        "https://www.googleapis.com/youtube/v3/videos?" +
+                            "&key=" +
+                            process.env.REACT_APP_YOUTUBE_DATA_API_KEY +
+                            "&part=statistics,contentDetails" +
+                            "&fields=items(statistics(viewCount,likeCount,dislikeCount,favoriteCount),contentDetails(duration))"
+                    )
+                    .then((response) => {
+                        response.data.items.forEach((item) => {
+                            results.forEach({
+                                id: item.id.videoId,
+                                title: item.snippet.title,
+                                publishDate: item.snippet.publishedAt,
+                                publishTime: item.snippet.publishTime,
+                                channel: {
+                                    id: item.snippet.channelId,
+                                    name: item.snippet.channelTitle,
+                                },
+                                thumbnail: item.snippet.thumbnails.medium,
+                            });
+                        });
+                        this.setState({ searchResults: results });
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+
+                this.setState({ searchResults: results });
             })
             .catch((error) => {
                 console.log(error);
