@@ -20,6 +20,7 @@ function ResultList(props) {
                         key={result.id}
                         title={result.title}
                         thumbnail={result.thumbnail}
+                        duration={result.duration}
                         views={result.views}
                         likes={result.likes}
                         dislikes={result.dislikes}
