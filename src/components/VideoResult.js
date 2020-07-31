@@ -41,12 +41,6 @@ const ChannelDetails = styled.div`
     margin-left: 5%;
 `;
 
-const ChannelImage = styled.img`
-    height: 40px;
-    width: 40px;
-    border-radius: 50%;
-`;
-
 const Title = styled.p`
     font-size: 1.5rem;
     margin: 0;
@@ -73,16 +67,13 @@ function VideoResult(props) {
             <ResultThumbnail>
                 <ThumbnailImage src={props.thumbnail.url} />
                 <ThumbnailTime>
-                    <Time>{props.thumbnail.time}</Time>
+                    <Time>{props.duration}</Time>
                 </ThumbnailTime>
             </ResultThumbnail>
-            <ChannelDetails key={props.channel.id}>
-                <ChannelImage src={props.channel.icon} alt="Channel Icon" />
-                <p>
-                    {props.channel.name} - {props.channel.subs}
-                </p>
-            </ChannelDetails>
             <Title>{props.title}</Title>
+            <ChannelDetails key={props.channel.id}>
+                <p>{props.channel.name}</p>
+            </ChannelDetails>
             <ResultStats>
                 <p>{props.views} Views &nbsp;</p>
                 <p>{props.likes} Likes &nbsp;</p>
