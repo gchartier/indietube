@@ -1,5 +1,5 @@
 import React from "react";
-import searchIcon from "../assets/searchIcon.svg";
+import searchIcon from "../assets/search.svg";
 import styled from "styled-components";
 
 const SearchContainer = styled.div`

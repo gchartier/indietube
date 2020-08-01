@@ -12,8 +12,8 @@ const results = [
                 "https://images.unsplash.com/photo-1549281899-f75600a24107?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1951&q=80",
             width: 120,
             height: 90,
-            duration: "10:10",
         },
+        duration: "10:10",
         views: "1000",
         likes: "25",
         dislikes: "15",
@@ -50,7 +50,7 @@ const results = [
 ];
 
 const StyledMainContent = styled.div`
-    background-color: whitesmoke;
+    background-color: #e6e6e6;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
@@ -76,6 +76,8 @@ class MainContent extends Component {
 
     handleSearchSubmit(event) {
         event.preventDefault();
+
+        // Request search API endpoint to get initial video list data
         axios
             .get(
                 "https://www.googleapis.com/youtube/v3/search?q=" +
@@ -88,7 +90,7 @@ class MainContent extends Component {
             )
             .then((response) => {
                 const results = [];
-                let videoIds = "";
+                const videoIds = [];
 
                 response.data.items.forEach((item) => {
                     results.push({
@@ -103,18 +105,16 @@ class MainContent extends Component {
                         thumbnail: item.snippet.thumbnails.medium,
                     });
 
-                    // Build list of ids to be used in the next request
-                    videoIds = videoIds.concat(item.id.videoId + "%2C");
+                    // Build array of ids to be used in the next request
+                    videoIds.push(item.id.videoId);
                 });
 
-                // Remove final URL encoded comma
-                videoIds = videoIds.slice(0, -4);
-
                 // Request videos API endpoint to retrieve video statistics
+                let URLEncodedIds = videoIds.join("%2C");
                 axios
                     .get(
                         "https://www.googleapis.com/youtube/v3/videos?&id=" +
-                            videoIds +
+                            URLEncodedIds +
                             "&key=" +
                             process.env.REACT_APP_YOUTUBE_DATA_API_KEY +
                             "&part=statistics,contentDetails" +
@@ -124,7 +124,9 @@ class MainContent extends Component {
                         response.data.items.forEach((item, i) => {
                             results[i] = {
                                 ...results[i],
-                                duration: item.contentDetails.duration,
+                                duration: convertDurationToTimestamp(
+                                    item.contentDetails.duration
+                                ),
                                 views: item.statistics.viewCount,
                                 likes: item.statistics.likeCount,
                                 dislikes: item.statistics.dislikeCount,
@@ -155,6 +157,33 @@ class MainContent extends Component {
             </StyledMainContent>
         );
     }
+}
+
+function convertDurationToTimestamp(ISODuration) {
+    let timestamp = "";
+    const matches = ISODuration.match(
+        /((?<hours>\d{0,2})H)?((?<minutes>\d{0,2})M)?(?<seconds>\d{0,2})S/
+    );
+
+    if (matches) {
+        if (matches.groups.hours)
+            timestamp = timestamp.concat(matches.groups.hours + ":");
+
+        if (matches.groups.minutes) {
+            if (matches.groups.hours && matches.groups.minutes.length === 1)
+                timestamp = timestamp.concat(
+                    "0" + matches.groups.minutes + ":"
+                );
+            else timestamp = timestamp.concat(matches.groups.minutes + ":");
+        } else timestamp = timestamp.concat("0:");
+
+        if (matches.groups.seconds) {
+            if (matches.groups.seconds.length === 1)
+                timestamp = timestamp.concat("0" + matches.groups.seconds);
+            else timestamp = timestamp.concat(matches.groups.seconds);
+        }
+    }
+    return timestamp;
 }
 
 export default MainContent;

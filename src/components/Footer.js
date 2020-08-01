@@ -4,30 +4,38 @@ import styled from "styled-components";
 const StyledFooter = styled.footer`
     text-align: center;
     font-size: 1.2rem;
+    background-color: #e6e6e6;
 `;
 
 const P = styled.p`
     font-weight: bold;
+    line-height: 2rem;
 `;
 
-const PrimarySpan = styled.span`
-    color: #ffce80;
-`;
-
-const SecondarySpan = styled.span`
-    color: tomato;
+const SiteLink = styled.a`
+    color: ${(props) => props.color || "black"};
 `;
 
 function Footer() {
     return (
         <StyledFooter>
             <P>
-                Designed and Built by
-                <PrimarySpan> GabrielChartier.dev</PrimarySpan>
-                <br />
-                All Video Content Belongs to Respective Owners <br />
-                This Site Uses the
-                <SecondarySpan> YouTube API</SecondarySpan>
+                Built by &nbsp;
+                <SiteLink
+                    color="#67a36f"
+                    href="https://gabrielchartier.dev"
+                    target="_blank"
+                >
+                    GabrielChartier.dev
+                </SiteLink>
+                &nbsp; using the &nbsp;
+                <SiteLink
+                    color="tomato"
+                    href="https://developers.google.com/youtube/v3/"
+                    target="_blank"
+                >
+                    YouTube Data API
+                </SiteLink>
             </P>
         </StyledFooter>
     );
