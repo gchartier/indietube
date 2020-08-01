@@ -1,24 +1,29 @@
-import React from "react";
+import React, { Component } from "react";
 import styled from "styled-components";
-import optionsMenu from "../assets/menuIcon.svg";
+import optionsMenu from "../assets/menu.svg";
+import likesIcon from "../assets/likes.svg";
+import dislikesIcon from "../assets/dislikes.svg";
+import viewsIcon from "../assets/views.svg";
 
 const ResultContainer = styled.div`
+    display: flex;
+    flex-direction: column;
     width: 90%;
     border-radius: 25px;
     border: 1px solid black;
     background-color: white;
     margin: 3% 0 3% 0;
-    padding-top: 4%;
+    padding: 3% 3% 0 3%;
 `;
 
 const ResultThumbnail = styled.div`
-    text-align: center;
     position: relative;
+    align-self: center;
+    width: 100%;
 `;
 
 const ThumbnailImage = styled.img`
-    width: 95%;
-    height: 200px;
+    width: 100%;
 `;
 
 const ThumbnailTime = styled.div`
@@ -35,34 +40,58 @@ const Time = styled.p`
     margin: 0;
 `;
 
-const ChannelDetails = styled.div`
-    display: flex;
-    align-items: center;
-    margin-left: 5%;
+const ChannelName = styled.p`
+    margin: 0;
 `;
 
 const Title = styled.p`
     font-size: 1.5rem;
     margin: 0;
-    margin-left: 5%;
 `;
 
 const ResultStats = styled.div`
     display: flex;
-    argin: 0;
-    margin-left: 5%;
 `;
 
-const ResultOptions = styled.div``;
+const ResultOptions = styled.div`
+    align-self: flex-end;
+`;
 
-const MenuIcon = styled.img``;
+const MenuIcon = styled.img`
+    padding: 20px;
+    width: 0.5rem;
+`;
 
 const Menu = styled.ul`
     background-color: green;
+    display: none;
 `;
 
-function VideoResult(props) {
-    return (
+const FlexContainer = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+`;
+
+const VideoStatistic = styled.div`
+    display: flex;
+    margin: 15px;
+`;
+
+const StatisticIcon = styled.img`
+    margin-left: 0.2rem;
+`;
+
+class VideoResult extends Component(props) {
+    constructor(props) {
+        this.state = {
+            menuIsVisible: false,
+        };
+
+        this.handleMenuClick = this.handleMenuClick.bind(this);
+    }
+
+    render(props) {
         <ResultContainer>
             <ResultThumbnail>
                 <ThumbnailImage src={props.thumbnail.url} />
@@ -71,25 +100,38 @@ function VideoResult(props) {
                 </ThumbnailTime>
             </ResultThumbnail>
             <Title>{props.title}</Title>
-            <ChannelDetails key={props.channel.id}>
-                <p>{props.channel.name}</p>
-            </ChannelDetails>
-            <ResultStats>
-                <p>{props.views} Views &nbsp;</p>
-                <p>{props.likes} Likes &nbsp;</p>
-                <p>{props.dislikes} Dislikes</p>
-            </ResultStats>
-            <ResultOptions>
-                <MenuIcon src={optionsMenu} alt="Result Options" />
-                <Menu>
-                    <li>Copy URL</li>
-                    <li>Open With YouTube.com</li>
-                    <li>Go to Channel</li>
-                    <li>This is not an indie creator</li>
-                </Menu>
-            </ResultOptions>
-        </ResultContainer>
-    );
+            <ChannelName key={props.channel.id}>
+                {props.channel.name}
+            </ChannelName>
+            <FlexContainer>
+                <ResultStats>
+                    <VideoStatistic>
+                        <p>{props.views}</p>
+                        <StatisticIcon src={viewsIcon} />
+                    </VideoStatistic>
+                    <VideoStatistic>
+                        <p>{props.likes}</p>
+                        <StatisticIcon src={likesIcon} />
+                    </VideoStatistic>
+                    <VideoStatistic>
+                        <p>{props.dislikes}</p>
+                        <StatisticIcon src={dislikesIcon} />
+                    </VideoStatistic>
+                </ResultStats>
+                <ResultOptions>
+                    <MenuIcon src={optionsMenu} alt="Result Options" />
+                    <Menu>
+                        <li>Copy URL</li>
+                        <li>Open With YouTube.com</li>
+                        <li>Go to Channel</li>
+                        <li>This is not an indie creator</li>
+                    </Menu>
+                </ResultOptions>
+            </FlexContainer>
+        </ResultContainer>;
+    }
 }
+
+function showMenu() {}
 
 export default VideoResult;
