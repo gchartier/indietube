@@ -14,9 +14,10 @@ const results = [
             height: 90,
         },
         duration: "10:10",
-        views: "1000",
-        likes: "25",
-        dislikes: "15",
+        views: "389776",
+        likes: "2598883",
+        dislikes: "12598885",
+        publishDate: "2019-03-07T12:46:43Z",
         title: "Hello thereeeeeee",
         channel: {
             id: "123",
@@ -38,6 +39,7 @@ const results = [
         views: "1000",
         likes: "25",
         dislikes: "15",
+        publishDate: "2019-03-07T12:46:43Z",
         title: "BISHHHHHHHHHH",
         channel: {
             id: "1234",
@@ -86,7 +88,7 @@ class MainContent extends Component {
                     process.env.REACT_APP_YOUTUBE_DATA_API_KEY +
                     "&part=snippet" +
                     "&type=video" +
-                    "&fields=items(id,snippet(publishedAt,channelId,title,channelTitle,publishTime),snippet/thumbnails(medium))"
+                    "&fields=items(id,snippet(publishedAt,channelId,title,channelTitle),snippet/thumbnails(medium))"
             )
             .then((response) => {
                 const results = [];
@@ -97,7 +99,6 @@ class MainContent extends Component {
                         id: item.id.videoId,
                         title: item.snippet.title,
                         publishDate: item.snippet.publishedAt,
-                        publishTime: item.snippet.publishTime,
                         channel: {
                             id: item.snippet.channelId,
                             name: item.snippet.channelTitle,
