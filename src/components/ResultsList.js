@@ -17,18 +17,7 @@ function ResultList(props) {
     return (
         <StyledResults>
             {props.results.map((result) => {
-                return (
-                    <VideoResult
-                        key={result.id}
-                        title={result.title}
-                        thumbnail={result.thumbnail}
-                        duration={result.duration}
-                        views={result.views}
-                        likes={result.likes}
-                        dislikes={result.dislikes}
-                        channel={result.channel}
-                    />
-                );
+                return <VideoResult result={result} />;
             })}
         </StyledResults>
     );
