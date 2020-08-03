@@ -7,13 +7,15 @@ import viewsIcon from "../assets/views.svg";
 import dividerIcon from "../assets/divider.svg";
 import moment from "moment";
 import * as d3 from "d3-format";
+import { channelURL, videoURL } from "../assets/urls.js";
 
 const ResultContainer = styled.div`
     display: flex;
     flex-direction: column;
     width: 90%;
-    border-radius: 15px;
-    border: 1px solid black;
+    border-radius: 5px;
+    border: 0 solid black;
+    box-shadow: 0 16px 24px 2px rgba(0, 0, 0, 0.14);
     background-color: white;
     margin: 3% 0 3% 0;
     padding: 3%;
@@ -88,6 +90,11 @@ const MenuItem = styled.li`
     &:hover {
         background-color: #ededed;
     }
+
+    & a {
+        display: block;
+        width: 100%;
+    }
 `;
 
 const FlexContainer = styled.div`
@@ -120,6 +127,11 @@ const PublishDate = styled.p`
 const Divider = styled.img`
     width: 0.5rem;
     margin: 0 0.5rem 0 0.5rem;
+`;
+
+const ResultLink = styled.a`
+    color: ${(props) => props.linkColor || "black"};
+    text-decoration: ${(props) => props.textDecor || "underline"};
 `;
 
 class VideoResult extends Component {
@@ -164,15 +176,34 @@ class VideoResult extends Component {
         return (
             <ResultContainer>
                 <ResultThumbnail>
-                    <ThumbnailImage src={this.props.result.thumbnail.url} />
+                    <ResultLink
+                        href={videoURL + this.props.result.id}
+                        target="_blank"
+                    >
+                        <ThumbnailImage src={this.props.result.thumbnail.url} />
+                    </ResultLink>
                     <ThumbnailTime>
                         <Time>{this.props.result.duration}</Time>
                     </ThumbnailTime>
                 </ResultThumbnail>
-                <Title>{this.props.result.title}</Title>
+                <Title>
+                    <ResultLink
+                        href={videoURL + this.props.result.id}
+                        target="_blank"
+                        textDecor="none"
+                    >
+                        {this.props.result.title}
+                    </ResultLink>
+                </Title>
                 <FlexContainer>
-                    <ChannelName key={this.props.result.channel.id}>
-                        {"by " + this.props.result.channel.name}
+                    <ChannelName>
+                        {"by "}
+                        <ResultLink
+                            href={channelURL + this.props.result.channel.id}
+                            target="_blank"
+                        >
+                            {this.props.result.channel.name}
+                        </ResultLink>
                     </ChannelName>
                     <Divider src={dividerIcon} />
                     <PublishDate>
@@ -217,9 +248,27 @@ class VideoResult extends Component {
                         />
                         {this.state.menuIsVisible && (
                             <Menu ref={this.menuContainer}>
-                                <MenuItem>Copy URL</MenuItem>
-                                <MenuItem>Open With YouTube.com</MenuItem>
-                                <MenuItem>Go to Channel</MenuItem>
+                                <MenuItem onClick={this.handleMenuClick}>
+                                    <ResultLink
+                                        href={videoURL + this.props.result.id}
+                                        target="_blank"
+                                        textDecor="none"
+                                    >
+                                        Open With YouTube.com
+                                    </ResultLink>
+                                </MenuItem>
+                                <MenuItem onClick={this.handleMenuClick}>
+                                    <ResultLink
+                                        href={
+                                            channelURL +
+                                            this.props.result.channel.id
+                                        }
+                                        target="_blank"
+                                        textDecor="none"
+                                    >
+                                        Go to Channel
+                                    </ResultLink>
+                                </MenuItem>
                                 <MenuItem>
                                     This is not an indie creator
                                 </MenuItem>
@@ -231,7 +280,5 @@ class VideoResult extends Component {
         );
     }
 }
-
-function showMenu() {}
 
 export default VideoResult;
