@@ -3,6 +3,7 @@ import Search from "./Search";
 import ResultList from "./ResultsList";
 import styled from "styled-components";
 import axios from "axios";
+import { apiSearchListURL, apiVideoURL } from "../assets/urls.js";
 
 const results = [
     {
@@ -51,6 +52,10 @@ const results = [
     },
 ];
 
+const filterList = [""];
+
+const RESULTS_LIMIT = 5;
+
 const StyledMainContent = styled.div`
     background-color: #e6e6e6;
     flex-grow: 1;
@@ -66,6 +71,7 @@ class MainContent extends Component {
         this.state = {
             searchQuery: "",
             searchResults: results,
+            filteredResults: [],
         };
 
         this.handleSearchChange = this.handleSearchChange.bind(this);
@@ -76,22 +82,53 @@ class MainContent extends Component {
         this.setState({ searchQuery: event.target.value });
     }
 
-    handleSearchSubmit(event) {
+    async handleSearchSubmit(event) {
         event.preventDefault();
 
         // Request search API endpoint to get initial video list data
-        axios
+        const searchResults = [];
+        retrieveSearchResults(this.state).then((res) => {
+            searchResults.concat(res);
+            console.log(searchResults);
+            if (!searchResults || searchResults.length < 1)
+                this.setState({ searchResults: [] });
+            else this.setState({ searchResults: searchResults });
+        });
+    }
+
+    render() {
+        return (
+            <StyledMainContent>
+                <Search
+                    searchQuery={this.state.searchQuery}
+                    onSearchChange={this.handleSearchChange}
+                    onSearchSubmit={this.handleSearchSubmit}
+                />
+                <ResultList results={this.state.searchResults} />
+            </StyledMainContent>
+        );
+    }
+}
+
+async function retrieveSearchResults(state) {
+    const results = [];
+    const indieResults = [];
+    const nonIndieResults = [];
+
+    while (results.length < RESULTS_LIMIT) {
+        await axios
             .get(
-                "https://www.googleapis.com/youtube/v3/search?q=" +
-                    this.state.searchQuery +
+                apiSearchListURL +
+                    state.searchQuery +
                     "&key=" +
                     process.env.REACT_APP_YOUTUBE_DATA_API_KEY +
                     "&part=snippet" +
+                    "&maxResults=" +
+                    RESULTS_LIMIT +
                     "&type=video" +
                     "&fields=items(id,snippet(publishedAt,channelId,title,channelTitle),snippet/thumbnails(medium))"
             )
-            .then((response) => {
-                const results = [];
+            .then(async (response) => {
                 const videoIds = [];
 
                 response.data.items.forEach((item) => {
@@ -112,9 +149,9 @@ class MainContent extends Component {
 
                 // Request videos API endpoint to retrieve video statistics
                 let URLEncodedIds = videoIds.join("%2C");
-                axios
+                await axios
                     .get(
-                        "https://www.googleapis.com/youtube/v3/videos?&id=" +
+                        apiVideoURL +
                             URLEncodedIds +
                             "&key=" +
                             process.env.REACT_APP_YOUTUBE_DATA_API_KEY +
@@ -133,31 +170,24 @@ class MainContent extends Component {
                                 dislikes: item.statistics.dislikeCount,
                             };
                         });
-                        this.setState({ searchResults: results });
+
+                        results.forEach((item) => {
+                            if (filterList.includes(item.channel.id)) {
+                                nonIndieResults.push(item);
+                            } else {
+                                indieResults.push(item);
+                            }
+                        });
                     })
                     .catch((error) => {
                         console.log(error);
                     });
-
-                this.setState({ searchResults: results });
             })
             .catch((error) => {
                 console.log(error);
             });
     }
-
-    render() {
-        return (
-            <StyledMainContent>
-                <Search
-                    searchQuery={this.state.searchQuery}
-                    onSearchChange={this.handleSearchChange}
-                    onSearchSubmit={this.handleSearchSubmit}
-                />
-                <ResultList results={this.state.searchResults} />
-            </StyledMainContent>
-        );
-    }
+    return indieResults;
 }
 
 function convertDurationToTimestamp(ISODuration) {

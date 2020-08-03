@@ -9,15 +9,13 @@ const StyledResults = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    border-bottom-left-radius: 25px;
-    border-bottom-right-radius: 25px;
 `;
 
 function ResultList(props) {
     return (
         <StyledResults>
             {props.results.map((result) => {
-                return <VideoResult result={result} />;
+                return <VideoResult key={result.id} result={result} />;
             })}
         </StyledResults>
     );

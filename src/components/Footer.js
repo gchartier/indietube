@@ -20,7 +20,7 @@ function Footer() {
     return (
         <StyledFooter>
             <P>
-                Built by &nbsp;
+                Built by{" "}
                 <SiteLink
                     color="#67a36f"
                     href="https://gabrielchartier.dev"
@@ -28,7 +28,8 @@ function Footer() {
                 >
                     GabrielChartier.dev
                 </SiteLink>
-                &nbsp; using the &nbsp;
+                <br />
+                Using the{" "}
                 <SiteLink
                     color="tomato"
                     href="https://developers.google.com/youtube/v3/"

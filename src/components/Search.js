@@ -25,8 +25,9 @@ const InputContainer = styled.form`
 `;
 
 const SearchInput = styled.input`
-    border-radius: 25px;
-    border: solid black 2.5px;
+    border-radius: 10px;
+    border: solid #ffce80 1.5px;
+    box-shadow: 0 16px 24px 2px rgba(0, 0, 0, 0.14);
     padding: 10px;
     width: 70%;
     height: 1rem;
@@ -47,20 +48,19 @@ const SearchIcon = styled.button`
 
 const ResultsContainer = styled.div`
     display: flex;
-    justify-content: space-evenly;
     width: 100%;
 `;
 
 const SearchResults = styled.p`
-    font-size: 1.3rem;
+    font-size: 0.9rem;
     padding: 0;
-    margin: 2% 0 0 0;
+    margin: 2% 0 0 5%;
 `;
 
 const ResultsFiltered = styled.p`
-    font-size: 1.3rem;
+    font-size: 0.9rem;
     padding: 0;
-    margin: 2% 0 0 0;
+    margin: 2% 0 0 5%;
 `;
 
 function Search(props) {
@@ -75,7 +75,7 @@ function Search(props) {
             </InputContainer>
             <ResultsContainer>
                 <SearchResults>2 Results</SearchResults>
-                <ResultsFiltered>5 Filtered</ResultsFiltered>
+                <ResultsFiltered>(5 Filtered)</ResultsFiltered>
             </ResultsContainer>
         </SearchContainer>
     );
