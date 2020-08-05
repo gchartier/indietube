@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import Search from "./Search";
 import ResultList from "./ResultsList";
 import styled from "styled-components";
-import axios from "axios";
 import { apiSearchListURL, apiVideoURL } from "../assets/urls.js";
 
 const results = [
@@ -87,9 +86,10 @@ class MainContent extends Component {
 
         // Request search API endpoint to get initial video list data
         const searchResults = [];
-        retrieveSearchResults(this.state).then((res) => {
+        await retrieveSearchResults(this.state).then((res) => {
+            console.log("response: " + res);
             searchResults.concat(res);
-            console.log(searchResults);
+            console.log("results: " + searchResults);
             if (!searchResults || searchResults.length < 1)
                 this.setState({ searchResults: [] });
             else this.setState({ searchResults: searchResults });
@@ -114,80 +114,71 @@ async function retrieveSearchResults(state) {
     const results = [];
     const indieResults = [];
     const nonIndieResults = [];
+    const videoIds = [];
+    const videosEndpoint =
+        apiSearchListURL +
+        state.searchQuery +
+        "&key=" +
+        process.env.REACT_APP_YOUTUBE_DATA_API_KEY +
+        "&part=snippet" +
+        "&maxResults=" +
+        RESULTS_LIMIT +
+        "&type=video" +
+        "&fields=items(id,snippet(publishedAt,channelId,title,channelTitle),snippet/thumbnails(medium))";
+    const searchEndpoint =
+        apiVideoURL +
+        videoIds.join("%2C") +
+        "&key=" +
+        process.env.REACT_APP_YOUTUBE_DATA_API_KEY +
+        "&part=statistics,contentDetails" +
+        "&fields=items(statistics(viewCount,likeCount,dislikeCount,favoriteCount),contentDetails(duration))";
 
-    while (results.length < RESULTS_LIMIT) {
-        await axios
-            .get(
-                apiSearchListURL +
-                    state.searchQuery +
-                    "&key=" +
-                    process.env.REACT_APP_YOUTUBE_DATA_API_KEY +
-                    "&part=snippet" +
-                    "&maxResults=" +
-                    RESULTS_LIMIT +
-                    "&type=video" +
-                    "&fields=items(id,snippet(publishedAt,channelId,title,channelTitle),snippet/thumbnails(medium))"
-            )
-            .then(async (response) => {
-                const videoIds = [];
+    // while (results.length < RESULTS_LIMIT) {
 
-                response.data.items.forEach((item) => {
-                    results.push({
-                        id: item.id.videoId,
-                        title: item.snippet.title,
-                        publishDate: item.snippet.publishedAt,
-                        channel: {
-                            id: item.snippet.channelId,
-                            name: item.snippet.channelTitle,
-                        },
-                        thumbnail: item.snippet.thumbnails.medium,
-                    });
-
-                    // Build array of ids to be used in the next request
-                    videoIds.push(item.id.videoId);
-                });
-
-                // Request videos API endpoint to retrieve video statistics
-                let URLEncodedIds = videoIds.join("%2C");
-                await axios
-                    .get(
-                        apiVideoURL +
-                            URLEncodedIds +
-                            "&key=" +
-                            process.env.REACT_APP_YOUTUBE_DATA_API_KEY +
-                            "&part=statistics,contentDetails" +
-                            "&fields=items(statistics(viewCount,likeCount,dislikeCount,favoriteCount),contentDetails(duration))"
-                    )
-                    .then((response) => {
-                        response.data.items.forEach((item, i) => {
-                            results[i] = {
-                                ...results[i],
-                                duration: convertDurationToTimestamp(
-                                    item.contentDetails.duration
-                                ),
-                                views: item.statistics.viewCount,
-                                likes: item.statistics.likeCount,
-                                dislikes: item.statistics.dislikeCount,
-                            };
-                        });
-
-                        results.forEach((item) => {
-                            if (filterList.includes(item.channel.id)) {
-                                nonIndieResults.push(item);
-                            } else {
-                                indieResults.push(item);
-                            }
-                        });
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                    });
-            })
-            .catch((error) => {
-                console.log(error);
+    // }
+    try {
+        const videosResponse = await fetch(videosEndpoint);
+        videosResponse.json().items.forEach((item) => {
+            results.push({
+                id: item.id.videoId,
+                title: item.snippet.title,
+                publishDate: item.snippet.publishedAt,
+                channel: {
+                    id: item.snippet.channelId,
+                    name: item.snippet.channelTitle,
+                },
+                thumbnail: item.snippet.thumbnails.medium,
             });
+
+            videoIds.push(item.id.videoId);
+        });
+
+        // Request videos API endpoint to retrieve video statistics
+        const searchResponse = await fetch(searchEndpoint);
+        searchResponse.json().items.forEach((item, i) => {
+            results[i] = {
+                ...results[i],
+                duration: convertDurationToTimestamp(
+                    item.contentDetails.duration
+                ),
+                views: item.statistics.viewCount,
+                likes: item.statistics.likeCount,
+                dislikes: item.statistics.dislikeCount,
+            };
+        });
+
+        results.forEach((item) => {
+            if (filterList.includes(item.channel.id)) {
+                nonIndieResults.push(item);
+            } else {
+                indieResults.push(item);
+            }
+        });
+
+        return indieResults;
+    } catch (e) {
+        console.log("Error: " + e);
     }
-    return indieResults;
 }
 
 function convertDurationToTimestamp(ISODuration) {
