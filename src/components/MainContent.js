@@ -181,6 +181,7 @@ async function retrieveSearchResults(state) {
     }
 }
 
+// This should be refactored to use the npm package installed
 function convertDurationToTimestamp(ISODuration) {
     let timestamp = "";
     const matches = ISODuration.match(
