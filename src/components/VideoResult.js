@@ -202,7 +202,12 @@ class VideoResult extends Component {
                             href={CHANNEL_URL + this.props.result.channel.id}
                             target="_blank"
                         >
-                            {this.props.result.channel.name}
+                            {
+                                this.props.result.channel
+                                    .name /*+
+                                " " +
+                            this.props.result.channel.id*/
+                            }
                         </ResultLink>
                     </ChannelName>
                     <Divider src={dividerIcon} />
