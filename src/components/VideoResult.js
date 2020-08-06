@@ -7,7 +7,7 @@ import viewsIcon from "../assets/views.svg";
 import dividerIcon from "../assets/divider.svg";
 import moment from "moment";
 import * as d3 from "d3-format";
-import { channelURL, videoURL } from "../assets/urls.js";
+import { CHANNEL_URL, VIDEO_URL } from "../assets/constants.js";
 
 const ResultContainer = styled.div`
     display: flex;
@@ -177,7 +177,7 @@ class VideoResult extends Component {
             <ResultContainer>
                 <ResultThumbnail>
                     <ResultLink
-                        href={videoURL + this.props.result.id}
+                        href={VIDEO_URL + this.props.result.id}
                         target="_blank"
                     >
                         <ThumbnailImage src={this.props.result.thumbnail.url} />
@@ -188,7 +188,7 @@ class VideoResult extends Component {
                 </ResultThumbnail>
                 <Title>
                     <ResultLink
-                        href={videoURL + this.props.result.id}
+                        href={VIDEO_URL + this.props.result.id}
                         target="_blank"
                         textDecor="none"
                     >
@@ -199,7 +199,7 @@ class VideoResult extends Component {
                     <ChannelName>
                         {"by "}
                         <ResultLink
-                            href={channelURL + this.props.result.channel.id}
+                            href={CHANNEL_URL + this.props.result.channel.id}
                             target="_blank"
                         >
                             {this.props.result.channel.name}
@@ -250,7 +250,7 @@ class VideoResult extends Component {
                             <Menu ref={this.menuContainer}>
                                 <MenuItem onClick={this.handleMenuClick}>
                                     <ResultLink
-                                        href={videoURL + this.props.result.id}
+                                        href={VIDEO_URL + this.props.result.id}
                                         target="_blank"
                                         textDecor="none"
                                     >
@@ -260,7 +260,7 @@ class VideoResult extends Component {
                                 <MenuItem onClick={this.handleMenuClick}>
                                     <ResultLink
                                         href={
-                                            channelURL +
+                                            CHANNEL_URL +
                                             this.props.result.channel.id
                                         }
                                         target="_blank"

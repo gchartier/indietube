@@ -2,58 +2,14 @@ import React, { Component } from "react";
 import Search from "./Search";
 import ResultList from "./ResultsList";
 import styled from "styled-components";
-import { apiSearchListURL, apiVideoURL } from "../assets/urls.js";
-
-const results = [
-    {
-        id: "xzy",
-        thumbnail: {
-            url:
-                "https://images.unsplash.com/photo-1549281899-f75600a24107?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1951&q=80",
-            width: 120,
-            height: 90,
-        },
-        duration: "10:10",
-        views: "389776",
-        likes: "2598883",
-        dislikes: "12598885",
-        publishDate: "2019-03-07T12:46:43Z",
-        title: "Hello thereeeeeee",
-        channel: {
-            id: "123",
-            icon:
-                "https://images.unsplash.com/photo-1557296387-5358ad7997bb?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=900&q=60",
-            name: "Test 1234",
-            subs: "500",
-        },
-    },
-    {
-        id: "abc",
-        thumbnail: {
-            url:
-                "https://images.unsplash.com/photo-1520531158340-44015069e78e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2038&q=80",
-            width: 120,
-            height: 90,
-        },
-        duration: "10:50",
-        views: "1000",
-        likes: "25",
-        dislikes: "15",
-        publishDate: "2019-03-07T12:46:43Z",
-        title: "BISHHHHHHHHHH",
-        channel: {
-            id: "1234",
-            icon:
-                "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=900&q=60",
-            name: "REEEEEEE",
-            subs: "512",
-        },
-    },
-];
-
-const filterList = [""];
-
-const RESULTS_LIMIT = 5;
+import axios from "axios";
+import {
+    API_SEARCH_URL,
+    API_VIDEOS_URL,
+    CHANNEL_FILTER_LIST,
+    PAGE_NUMBER,
+    RESULTS_LIMIT,
+} from "../assets/constants.js";
 
 const StyledMainContent = styled.div`
     background-color: #e6e6e6;
@@ -69,8 +25,8 @@ class MainContent extends Component {
 
         this.state = {
             searchQuery: "",
-            searchResults: results,
-            filteredResults: [],
+            indieResults: [],
+            nonIndieResults: [],
         };
 
         this.handleSearchChange = this.handleSearchChange.bind(this);
@@ -81,18 +37,18 @@ class MainContent extends Component {
         this.setState({ searchQuery: event.target.value });
     }
 
-    async handleSearchSubmit(event) {
+    handleSearchSubmit(event) {
         event.preventDefault();
 
-        // Request search API endpoint to get initial video list data
-        const searchResults = [];
-        await retrieveSearchResults(this.state).then((res) => {
-            console.log("response: " + res);
-            searchResults.concat(res);
-            console.log("results: " + searchResults);
-            if (!searchResults || searchResults.length < 1)
-                this.setState({ searchResults: [] });
-            else this.setState({ searchResults: searchResults });
+        retrieveSearchResults(this.state).then((results) => {
+            this.setState({
+                indieResults: this.state.indieResults.concat(
+                    results.indieResults
+                ),
+                nonIndieResults: this.state.nonIndieResults.concat(
+                    results.nonIndieResults
+                ),
+            });
         });
     }
 
@@ -103,43 +59,48 @@ class MainContent extends Component {
                     searchQuery={this.state.searchQuery}
                     onSearchChange={this.handleSearchChange}
                     onSearchSubmit={this.handleSearchSubmit}
+                    nonIndieCount={this.state.nonIndieResults.length}
                 />
-                <ResultList results={this.state.searchResults} />
+                <ResultList results={this.state.indieResults} />
             </StyledMainContent>
         );
     }
 }
 
 async function retrieveSearchResults(state) {
-    const results = [];
     const indieResults = [];
     const nonIndieResults = [];
     const videoIds = [];
-    const videosEndpoint =
-        apiSearchListURL +
+    const searchEndpoint =
+        API_SEARCH_URL +
+        "&q=" +
         state.searchQuery +
         "&key=" +
         process.env.REACT_APP_YOUTUBE_DATA_API_KEY +
-        "&part=snippet" +
         "&maxResults=" +
         RESULTS_LIMIT +
+        "&chart=mostPopular" +
+        "&regionCode=us" +
         "&type=video" +
+        "&part=snippet" +
         "&fields=items(id,snippet(publishedAt,channelId,title,channelTitle),snippet/thumbnails(medium))";
-    const searchEndpoint =
-        apiVideoURL +
-        videoIds.join("%2C") +
+    const videosEndpoint =
+        API_VIDEOS_URL +
         "&key=" +
         process.env.REACT_APP_YOUTUBE_DATA_API_KEY +
         "&part=statistics,contentDetails" +
-        "&fields=items(statistics(viewCount,likeCount,dislikeCount,favoriteCount),contentDetails(duration))";
+        "&fields=items(statistics(viewCount,likeCount,dislikeCount,favoriteCount),contentDetails(duration))" +
+        "&id=";
 
     // while (results.length < RESULTS_LIMIT) {
 
     // }
     try {
-        const videosResponse = await fetch(videosEndpoint);
-        videosResponse.json().items.forEach((item) => {
-            results.push({
+        const videosResponse = await axios.get(searchEndpoint);
+        const videoList = await videosResponse.data;
+
+        videoList.items.forEach((item) => {
+            const result = {
                 id: item.id.videoId,
                 title: item.snippet.title,
                 publishDate: item.snippet.publishedAt,
@@ -148,16 +109,28 @@ async function retrieveSearchResults(state) {
                     name: item.snippet.channelTitle,
                 },
                 thumbnail: item.snippet.thumbnails.medium,
-            });
+            };
 
-            videoIds.push(item.id.videoId);
+            // Filter out any channel Ids that are in the filter list
+            if (
+                CHANNEL_FILTER_LIST.some(
+                    (channel) => channel.channelId === result.channel.id
+                )
+            ) {
+                nonIndieResults.push(result);
+            } else {
+                indieResults.push(result);
+                videoIds.push(result.id);
+            }
         });
 
         // Request videos API endpoint to retrieve video statistics
-        const searchResponse = await fetch(searchEndpoint);
-        searchResponse.json().items.forEach((item, i) => {
-            results[i] = {
-                ...results[i],
+        const searchResponse = await axios.get(
+            videosEndpoint + videoIds.join("%2C")
+        );
+        searchResponse.data.items.forEach((item, i) => {
+            indieResults[i] = {
+                ...indieResults[i],
                 duration: convertDurationToTimestamp(
                     item.contentDetails.duration
                 ),
@@ -167,15 +140,7 @@ async function retrieveSearchResults(state) {
             };
         });
 
-        results.forEach((item) => {
-            if (filterList.includes(item.channel.id)) {
-                nonIndieResults.push(item);
-            } else {
-                indieResults.push(item);
-            }
-        });
-
-        return indieResults;
+        return { indieResults: indieResults, nonIndieResults: nonIndieResults };
     } catch (e) {
         console.log("Error: " + e);
     }
