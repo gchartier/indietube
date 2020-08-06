@@ -51,12 +51,6 @@ const ResultsContainer = styled.div`
     width: 100%;
 `;
 
-const SearchResults = styled.p`
-    font-size: 0.9rem;
-    padding: 0;
-    margin: 2% 0 0 5%;
-`;
-
 const ResultsFiltered = styled.p`
     font-size: 0.9rem;
     padding: 0;
@@ -74,8 +68,9 @@ function Search(props) {
                 <SearchIcon type="submit" alt="Submit Search" />
             </InputContainer>
             <ResultsContainer>
-                <SearchResults>2 Results</SearchResults>
-                <ResultsFiltered>(5 Filtered)</ResultsFiltered>
+                <ResultsFiltered>
+                    {props.nonIndieCount} Non-indie Videos
+                </ResultsFiltered>
             </ResultsContainer>
         </SearchContainer>
     );
