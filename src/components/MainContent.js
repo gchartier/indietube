@@ -42,12 +42,8 @@ class MainContent extends Component {
 
         retrieveSearchResults(this.state).then((results) => {
             this.setState({
-                indieResults: this.state.indieResults.concat(
-                    results.indieResults
-                ),
-                nonIndieResults: this.state.nonIndieResults.concat(
-                    results.nonIndieResults
-                ),
+                indieResults: results.indieResults,
+                nonIndieResults: results.nonIndieResults,
             });
         });
     }
@@ -80,7 +76,7 @@ async function retrieveSearchResults(state) {
         "&maxResults=" +
         RESULTS_LIMIT +
         "&chart=mostPopular" +
-        "&regionCode=us" +
+        "&regionCode=US" +
         "&type=video" +
         "&part=snippet" +
         "&fields=items(id,snippet(publishedAt,channelId,title,channelTitle),snippet/thumbnails(medium))";
