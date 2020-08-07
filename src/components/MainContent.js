@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import Search from "./Search";
 import ResultList from "./ResultsList";
+import About from "./About";
 import styled from "styled-components";
 import axios from "axios";
 import {
@@ -51,6 +52,7 @@ class MainContent extends Component {
     render() {
         return (
             <StyledMainContent>
+                <About />
                 <Search
                     searchQuery={this.state.searchQuery}
                     onSearchChange={this.handleSearchChange}
