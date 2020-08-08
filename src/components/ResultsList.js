@@ -1,5 +1,5 @@
 import React from "react";
-import VideoResult from "./VideoResult";
+import VideoResult from "./Result/Result";
 import styled from "styled-components";
 
 const StyledResults = styled.div`

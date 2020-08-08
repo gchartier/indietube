@@ -62,15 +62,7 @@ class Header extends Component {
                 </H1>
                 <Nav>
                     <NavList>
-                        <NavItem>
-                            <a
-                                id="About"
-                                className="menu-item"
-                                onClick={this.openAboutModal}
-                            >
-                                About
-                            </a>
-                        </NavItem>
+                        <NavItem onClick={this.openAboutModal}>About</NavItem>
                     </NavList>
                 </Nav>
                 {this.state.aboutModalIsOpen && (

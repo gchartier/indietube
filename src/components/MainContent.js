@@ -7,11 +7,8 @@ import {
     API_SEARCH_URL,
     API_VIDEOS_URL,
     CHANNEL_FILTER_LIST,
-    PAGE_NUMBER,
     RESULTS_LIMIT,
 } from "../assets/constants.js";
-import About from "./About";
-import Modal from "./Modal";
 
 const StyledMainContent = styled.div`
     background-color: #e6e6e6;
