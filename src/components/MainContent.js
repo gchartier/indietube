@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import Search from "./Search";
 import ResultList from "./ResultsList";
-import About from "./About";
 import styled from "styled-components";
 import axios from "axios";
 import {
@@ -11,6 +10,8 @@ import {
     PAGE_NUMBER,
     RESULTS_LIMIT,
 } from "../assets/constants.js";
+import About from "./About";
+import Modal from "./Modal";
 
 const StyledMainContent = styled.div`
     background-color: #e6e6e6;
@@ -52,7 +53,6 @@ class MainContent extends Component {
     render() {
         return (
             <StyledMainContent>
-                <About />
                 <Search
                     searchQuery={this.state.searchQuery}
                     onSearchChange={this.handleSearchChange}
