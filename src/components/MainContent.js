@@ -5,10 +5,12 @@ import styled from "styled-components";
 import axios from "axios";
 import {
     API_SEARCH_URL,
+    SEARCH_PARAMS,
     API_VIDEOS_URL,
+    VIDEOS_PARAMS,
     CHANNEL_FILTER_LIST,
-    RESULTS_LIMIT,
 } from "../assets/constants.js";
+import convertDurationToTimestamp from "../assets/helperFunctions.js";
 
 const StyledMainContent = styled.div`
     background-color: #e6e6e6;
@@ -67,25 +69,8 @@ async function retrieveSearchResults(state) {
     const nonIndieResults = [];
     const videoIds = [];
     const searchEndpoint =
-        API_SEARCH_URL +
-        "&q=" +
-        state.searchQuery +
-        "&key=" +
-        process.env.REACT_APP_YOUTUBE_DATA_API_KEY +
-        "&maxResults=" +
-        RESULTS_LIMIT +
-        "&chart=mostPopular" +
-        "&regionCode=US" +
-        "&type=video" +
-        "&part=snippet" +
-        "&fields=items(id,snippet(publishedAt,channelId,title,channelTitle),snippet/thumbnails(medium))";
-    const videosEndpoint =
-        API_VIDEOS_URL +
-        "&key=" +
-        process.env.REACT_APP_YOUTUBE_DATA_API_KEY +
-        "&part=statistics,contentDetails" +
-        "&fields=items(statistics(viewCount,likeCount,dislikeCount,favoriteCount),contentDetails(duration))" +
-        "&id=";
+        API_SEARCH_URL + "&q=" + state.searchQuery + SEARCH_PARAMS;
+    const videosEndpoint = API_VIDEOS_URL + VIDEOS_PARAMS;
 
     // while (results.length < RESULTS_LIMIT) {
 
@@ -139,34 +124,6 @@ async function retrieveSearchResults(state) {
     } catch (e) {
         console.log("Error: " + e);
     }
-}
-
-// This should be refactored to use the npm package installed
-function convertDurationToTimestamp(ISODuration) {
-    let timestamp = "";
-    const matches = ISODuration.match(
-        /((?<hours>\d{0,2})H)?((?<minutes>\d{0,2})M)?(?<seconds>\d{0,2})S/
-    );
-
-    if (matches) {
-        if (matches.groups.hours)
-            timestamp = timestamp.concat(matches.groups.hours + ":");
-
-        if (matches.groups.minutes) {
-            if (matches.groups.hours && matches.groups.minutes.length === 1)
-                timestamp = timestamp.concat(
-                    "0" + matches.groups.minutes + ":"
-                );
-            else timestamp = timestamp.concat(matches.groups.minutes + ":");
-        } else timestamp = timestamp.concat("0:");
-
-        if (matches.groups.seconds) {
-            if (matches.groups.seconds.length === 1)
-                timestamp = timestamp.concat("0" + matches.groups.seconds);
-            else timestamp = timestamp.concat(matches.groups.seconds);
-        }
-    }
-    return timestamp;
 }
 
 export default MainContent;
