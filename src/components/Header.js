@@ -1,9 +1,11 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import Menu from "react-burger-menu/lib/menus/slide";
+import About from "./About";
 
 const StyledHeader = styled.header`
+    display: flex;
     text-align: left;
+    justify-content: space-between;
 `;
 
 const H1 = styled.h1`
@@ -15,71 +17,42 @@ const PrimarySpan = styled.span`
     color: #ffce80;
 `;
 
-var menuStyles = {
-    bmBurgerButton: {
-        position: "absolute",
-        width: "36px",
-        height: "30px",
-        right: "36px",
-        top: "30px",
-    },
-    bmBurgerBars: {
-        background: "#373a47",
-    },
-    bmCrossButton: {
-        height: "24px",
-        width: "24px",
-    },
-    bmCross: {
-        background: "#bdc3c7",
-    },
-    bmMenuWrap: {
-        position: "fixed",
-        height: "100%",
-    },
-    bmMenu: {
-        background: "#373a47",
-        padding: "2.5em 1.5em 0",
-        fontSize: "1.15em",
-    },
-    bmMorphShape: {
-        fill: "#373a47",
-    },
-    bmItemList: {
-        color: "#b8b7ad",
-        padding: "0.8em",
-    },
-    bmItem: {
-        display: "inline-block",
-        color: "#ffce80",
-        fontSize: "1.5rem",
-        cursor: "pointer",
-    },
-    bmOverlay: {
-        height: "100vh",
-        background: "rgba(0, 0, 0, 0.3)",
-    },
-};
+const Nav = styled.nav`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 2%;
+`;
+
+const NavList = styled.ul`
+    display: flex;
+    padding: 0;
+`;
+
+const NavItem = styled.li`
+    text-decoration: none;
+    list-style: none;
+    cursor: pointer;
+    font-weight: bold;
+    color: #ffce80;
+    font-size: 1.3rem;
+`;
 
 class Header extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            menuOpen: false,
+            aboutModalIsOpen: false,
         };
     }
 
-    handleStateChange(state) {
-        this.setState({ menuOpen: state.isOpen });
-    }
+    openAboutModal = () => {
+        this.setState({ aboutModalIsOpen: true });
+    };
 
-    closeMenu() {
-        this.setState({ menuOpen: false });
-    }
-
-    openAbout() {
-        this.setState((state) => ({ menuOpen: !state.menuOpen }));
-    }
+    closeAboutModal = () => {
+        this.setState({ aboutModalIsOpen: false });
+    };
 
     render() {
         return (
@@ -87,20 +60,22 @@ class Header extends Component {
                 <H1>
                     indie<PrimarySpan>Tube</PrimarySpan>
                 </H1>
-                <Menu
-                    right
-                    styles={menuStyles}
-                    isOpen={this.state.menuOpen}
-                    onStateChange={(state) => this.handleStateChange(state)}
-                >
-                    <a
-                        id="About"
-                        className="menu-item"
-                        onClick={() => this.closeMenu()}
-                    >
-                        About
-                    </a>
-                </Menu>
+                <Nav>
+                    <NavList>
+                        <NavItem>
+                            <a
+                                id="About"
+                                className="menu-item"
+                                onClick={this.openAboutModal}
+                            >
+                                About
+                            </a>
+                        </NavItem>
+                    </NavList>
+                </Nav>
+                {this.state.aboutModalIsOpen && (
+                    <About closeHandler={this.closeAboutModal} />
+                )}
             </StyledHeader>
         );
     }
