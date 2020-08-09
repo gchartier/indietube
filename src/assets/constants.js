@@ -17,9 +17,11 @@ const SEARCH_PARAMS =
     RESULTS_LIMIT +
     "&chart=mostPopular" +
     "&regionCode=US" +
+    "&relevanceLanguage=en" +
+    "&safeSearch=none" +
     "&type=video" +
     "&part=snippet" +
-    "&fields=items(id,snippet(publishedAt,channelId,title,channelTitle),snippet/thumbnails(medium))";
+    "&fields=nextPageToken,prevPageToken,items(id,snippet(publishedAt,channelId,title,channelTitle),snippet/thumbnails(medium))";
 
 const API_VIDEOS_URL = BASE_API_URL + "videos?";
 const VIDEOS_PARAMS =
@@ -131,6 +133,172 @@ const CHANNEL_FILTER_LIST = [
     { channelName: "WFLA News Channel 8", channelId: "UCDvJcb8Adv-_bOrtnRLmiDw" },
 ];
 
+const tempResults = [
+    {
+        id: "dDh4cNtY4gs",
+        title:
+            "New Rule: Here Lies Donald Trump | Real Time with Bill Maher (HBO)",
+        publishDate: "2020-08-08T21:34:20Z",
+        channel: {
+            id: "UCy6kyFxaMqGtpE3pQTflK8A",
+            name: "Real Time with Bill Maher",
+        },
+        thumbnail: {
+            url: "https://i.ytimg.com/vi/dDh4cNtY4gs/mqdefault.jpg",
+            width: 320,
+            height: 180,
+        },
+        duration: "5:31",
+        views: "746148",
+        likes: "25542",
+        dislikes: "1844",
+    },
+    {
+        id: "AbUk25SYQuc",
+        title: "LeBron James Reacts To Trump&#39;s NBA Criticism",
+        publishDate: "2020-08-06T19:02:42Z",
+        channel: { id: "UCKY5PiEq8Tl9r7f3qittXng", name: "ET Canada" },
+        thumbnail: {
+            url: "https://i.ytimg.com/vi/AbUk25SYQuc/mqdefault.jpg",
+            width: 320,
+            height: 180,
+        },
+        duration: "8:33",
+        views: "21309",
+        likes: "325",
+        dislikes: "53",
+    },
+    {
+        id: "vCpqFs-S7_I",
+        title: "Trump Twice Mispronounces Yosemite During Signing Ceremony",
+        publishDate: "2020-08-06T09:00:14Z",
+        channel: {
+            id: "UCVTyTA7-g9nopHeHbeuvpRA",
+            name: "Late Night with Seth Meyers",
+        },
+        thumbnail: {
+            url: "https://i.ytimg.com/vi/vCpqFs-S7_I/mqdefault.jpg",
+            width: 320,
+            height: 180,
+        },
+        duration: "3:22",
+        views: "478768",
+        likes: "9201",
+        dislikes: "249",
+    },
+    {
+        id: "THQH9QJKrIE",
+        title:
+            "Trump signs executive orders on unemployment, evictions, student loans and payroll tax",
+        publishDate: "2020-08-08T21:15:00Z",
+        channel: { id: "UCHd62-u_v4DvJ8TCFtpi4GA", name: "Washington Post" },
+        thumbnail: {
+            url: "https://i.ytimg.com/vi/THQH9QJKrIE/mqdefault.jpg",
+            width: 320,
+            height: 180,
+        },
+        duration: "2:18",
+        views: "437939",
+        likes: "5312",
+        dislikes: "840",
+    },
+    {
+        id: "Y8_H6wYuRc8",
+        title:
+            "Trump defends crowd gathered for news conference in N.J. as &#39;peaceful protesters&#39;",
+        publishDate: "2020-08-08T00:53:47Z",
+        channel: { id: "UCHd62-u_v4DvJ8TCFtpi4GA", name: "Washington Post" },
+        thumbnail: {
+            url: "https://i.ytimg.com/vi/Y8_H6wYuRc8/mqdefault.jpg",
+            width: 320,
+            height: 180,
+        },
+        duration: "1:29",
+        views: "230457",
+        likes: "3474",
+        dislikes: "721",
+    },
+    {
+        id: "gR1VzDA-rr4",
+        title:
+            "First Take on LeBron James addressing President Trump&#39;s comments",
+        publishDate: "2020-08-06T17:33:53Z",
+        channel: { id: "UCiWLfSweyRNmLpgEHekhoAg", name: "ESPN" },
+        thumbnail: {
+            url: "https://i.ytimg.com/vi/gR1VzDA-rr4/mqdefault.jpg",
+            width: 320,
+            height: 180,
+        },
+        duration: "7:05",
+        views: "59817",
+        likes: "935",
+        dislikes: "454",
+    },
+    {
+        id: "WlCrWLQ3Tb0",
+        title: "Republicans IMPLODE Over Post-Trump Leader",
+        publishDate: "2020-08-09T16:00:06Z",
+        channel: { id: "UCl9roQQwv4o4OuBj3FhQdDQ", name: "The Damage Report" },
+        thumbnail: {
+            url: "https://i.ytimg.com/vi/WlCrWLQ3Tb0/mqdefault.jpg",
+            width: 320,
+            height: 180,
+        },
+        duration: "8:58",
+        views: "40581",
+        likes: "2297",
+        dislikes: "36",
+    },
+    {
+        id: "hjNPoaxuWSc",
+        title:
+            "LeBron James talks Lakers’ loss, reacts to President Trump&#39;s criticism of kneeling | NBA on ESPN",
+        publishDate: "2020-08-06T04:30:23Z",
+        channel: { id: "UCiWLfSweyRNmLpgEHekhoAg", name: "ESPN" },
+        thumbnail: {
+            url: "https://i.ytimg.com/vi/hjNPoaxuWSc/mqdefault.jpg",
+            width: 320,
+            height: 180,
+        },
+        duration: "9:04",
+        views: "107542",
+        likes: "1134",
+        dislikes: "662",
+    },
+    {
+        id: "mp_Uuz9k7Os",
+        title:
+            "He Predicted a Trump Win in 2016. What&#39;s His Forecast For 2020? | NYT Opinion",
+        publishDate: "2020-08-05T17:00:09Z",
+        channel: { id: "UCqnbDFdCpuN8CMEg0VuEBqA", name: "The New York Times" },
+        thumbnail: {
+            url: "https://i.ytimg.com/vi/mp_Uuz9k7Os/mqdefault.jpg",
+            width: 320,
+            height: 180,
+        },
+        duration: "7:14",
+        views: "800377",
+        likes: "15775",
+        dislikes: "3926",
+    },
+    {
+        id: "UC80rITXfT4",
+        title:
+            "WHAT DID YOU JUST SAY? President Trump TAKES ON MEDIA During SURPRISE News Conference",
+        publishDate: "2020-08-08T00:24:23Z",
+        channel: { id: "UCJg9wBPyKMNA5sRDnvzmkdg", name: "NewsNOW from FOX" },
+        thumbnail: {
+            url: "https://i.ytimg.com/vi/UC80rITXfT4/mqdefault.jpg",
+            width: 320,
+            height: 180,
+        },
+        duration: "7:50",
+        views: "163676",
+        likes: "6654",
+        dislikes: "180",
+    },
+];
+
 export {
     CHANNEL_URL,
     VIDEO_URL,
@@ -141,4 +309,5 @@ export {
     RESULTS_LIMIT,
     PAGE_LIMIT,
     CHANNEL_FILTER_LIST,
+    tempResults,
 };

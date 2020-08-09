@@ -9,6 +9,8 @@ import {
     API_VIDEOS_URL,
     VIDEOS_PARAMS,
     CHANNEL_FILTER_LIST,
+    PAGE_LIMIT,
+    tempResults,
 } from "../assets/constants.js";
 import convertDurationToTimestamp from "../assets/helperFunctions.js";
 
@@ -17,7 +19,9 @@ const StyledMainContent = styled.div`
     flex-grow: 1;
     display: flex;
     flex-direction: column;
+    justify-content: center;
     align-items: center;
+    width: 100%;
 `;
 
 class MainContent extends Component {
@@ -26,12 +30,16 @@ class MainContent extends Component {
 
         this.state = {
             searchQuery: "",
-            indieResults: [],
-            nonIndieResults: [],
+            resultPages: tempResults,
+            currentPage: 0,
+            nextPageToken: "",
+            pageOverflow: [],
+            nonIndieCount: 0,
         };
 
         this.handleSearchChange = this.handleSearchChange.bind(this);
         this.handleSearchSubmit = this.handleSearchSubmit.bind(this);
+        this.getNextPageOfResults = this.getNextPageOfResults.bind(this);
     }
 
     handleSearchChange(event) {
@@ -43,8 +51,28 @@ class MainContent extends Component {
 
         retrieveSearchResults(this.state).then((results) => {
             this.setState({
-                indieResults: results.indieResults,
-                nonIndieResults: results.nonIndieResults,
+                resultPages: results.resultPage,
+                pageOverflow: results.pageOverflow,
+                nonIndieCount: results.nonIndieCount,
+                nextPageToken: results.nextPageToken,
+            });
+        });
+    }
+
+    getNextPageOfResults() {
+        retrieveNextSearchResultsPage(this.state).then((results) => {
+            const currentPages = this.state.resultPages;
+
+            console.log(
+                "Appending " +
+                    results.resultPage.length +
+                    " results to existing data..."
+            );
+            this.setState({
+                resultPages: currentPages.concat(results.resultPage),
+                pageOverflow: results.pageOverflow,
+                nonIndieCount: results.nonIndieCount,
+                nextPageToken: results.nextPageToken,
             });
         });
     }
@@ -56,61 +84,87 @@ class MainContent extends Component {
                     searchQuery={this.state.searchQuery}
                     onSearchChange={this.handleSearchChange}
                     onSearchSubmit={this.handleSearchSubmit}
-                    nonIndieCount={this.state.nonIndieResults.length}
+                    nonIndieCount={this.state.nonIndieCount}
                 />
-                <ResultList results={this.state.indieResults} />
+                <ResultList
+                    results={this.state.resultPages}
+                    scrollHandler={this.getNextPageOfResults}
+                />
             </StyledMainContent>
         );
     }
 }
 
 async function retrieveSearchResults(state) {
-    const indieResults = [];
-    const nonIndieResults = [];
-    const videoIds = [];
-    const searchEndpoint =
+    let searchEndpoint =
         API_SEARCH_URL + "&q=" + state.searchQuery + SEARCH_PARAMS;
     const videosEndpoint = API_VIDEOS_URL + VIDEOS_PARAMS;
+    const videoIds = [];
+    const resultPage = [];
+    const pageOverflow = [];
+    const nonIndieResults = [];
+    let requestRound = 0;
+    let searchResponse = "";
+    let searchData = "";
+    let nextPageToken = "";
 
-    // while (results.length < RESULTS_LIMIT) {
-
-    // }
     try {
-        const videosResponse = await axios.get(searchEndpoint);
-        const videoList = await videosResponse.data;
+        do {
+            requestRound++;
+            console.log("Request round " + requestRound);
+            searchResponse = await axios.get(
+                nextPageToken !== ""
+                    ? searchEndpoint + "&pageToken=" + nextPageToken
+                    : searchEndpoint
+            );
+            searchData = await searchResponse.data;
 
-        videoList.items.forEach((item) => {
-            const result = {
-                id: item.id.videoId,
-                title: item.snippet.title,
-                publishDate: item.snippet.publishedAt,
-                channel: {
-                    id: item.snippet.channelId,
-                    name: item.snippet.channelTitle,
-                },
-                thumbnail: item.snippet.thumbnails.medium,
-            };
+            nextPageToken = searchData.nextPageToken;
+            searchData.items.forEach((item) => {
+                const result = {
+                    id: item.id.videoId,
+                    title: item.snippet.title,
+                    publishDate: item.snippet.publishedAt,
+                    channel: {
+                        id: item.snippet.channelId,
+                        name: item.snippet.channelTitle,
+                    },
+                    thumbnail: item.snippet.thumbnails.medium,
+                };
 
-            // Filter out any channel Ids that are in the filter list
-            if (
-                CHANNEL_FILTER_LIST.some(
-                    (channel) => channel.channelId === result.channel.id
-                )
-            ) {
-                nonIndieResults.push(result);
-            } else {
-                indieResults.push(result);
-                videoIds.push(result.id);
-            }
-        });
+                // Filter out any channel Ids that are in the filter list
+                if (
+                    CHANNEL_FILTER_LIST.some(
+                        (channel) => channel.channelId === result.channel.id
+                    )
+                ) {
+                    nonIndieResults.push(result);
+                } else {
+                    if (resultPage.length < PAGE_LIMIT) {
+                        resultPage.push(result);
+                        videoIds.push(result.id);
+                    } else pageOverflow.push(result);
+                }
+            });
+        } while (resultPage.length < PAGE_LIMIT && requestRound < 4);
+
+        console.log(
+            "Page has " +
+                resultPage.length +
+                " of " +
+                PAGE_LIMIT +
+                " results..."
+        );
+        console.log(nonIndieResults.length + " results were not indie...");
+        console.log("Overflowed " + pageOverflow.length + " results...");
 
         // Request videos API endpoint to retrieve video statistics
-        const searchResponse = await axios.get(
+        const videoDetailsResponse = await axios.get(
             videosEndpoint + videoIds.join("%2C")
         );
-        searchResponse.data.items.forEach((item, i) => {
-            indieResults[i] = {
-                ...indieResults[i],
+        videoDetailsResponse.data.items.forEach((item, i) => {
+            resultPage[i] = {
+                ...resultPage[i],
                 duration: convertDurationToTimestamp(
                     item.contentDetails.duration
                 ),
@@ -120,7 +174,112 @@ async function retrieveSearchResults(state) {
             };
         });
 
-        return { indieResults: indieResults, nonIndieResults: nonIndieResults };
+        return {
+            resultPage: resultPage,
+            pageOverflow: pageOverflow,
+            nonIndieCount: nonIndieResults.length,
+            nextPageToken: nextPageToken,
+        };
+    } catch (e) {
+        console.log("Error: " + e);
+    }
+}
+
+async function retrieveNextSearchResultsPage(state) {
+    let searchEndpoint =
+        API_SEARCH_URL + "&q=" + state.searchQuery + SEARCH_PARAMS;
+    const videosEndpoint = API_VIDEOS_URL + VIDEOS_PARAMS;
+    const videoIds = [];
+    const resultPage = [];
+    const pageOverflow = state.pageOverflow;
+    const nonIndieResults = [];
+    let requestRound = 0;
+    let searchResponse = "";
+    let searchData = "";
+    let nextPageToken = state.nextPageToken;
+
+    try {
+        // Fill page from overflow if any
+        let counter = 0;
+        while (pageOverflow.length > 0 && resultPage.length < PAGE_LIMIT) {
+            resultPage.push(pageOverflow.pop());
+            counter++;
+            videoIds.push(resultPage[resultPage.length - 1].id);
+        }
+        console.log("Pushed " + counter + "overflow results...");
+
+        // Retrieve more results if the page is not full
+        while (resultPage.length < PAGE_LIMIT && requestRound < 4) {
+            console.log("Request round " + requestRound);
+            searchResponse = await axios.get(
+                nextPageToken !== ""
+                    ? searchEndpoint + "&pageToken=" + nextPageToken
+                    : searchEndpoint
+            );
+            searchData = await searchResponse.data;
+
+            requestRound++;
+            nextPageToken = searchData.nextPageToken;
+            searchData.items.forEach((item) => {
+                const result = {
+                    id: item.id.videoId,
+                    title: item.snippet.title,
+                    publishDate: item.snippet.publishedAt,
+                    channel: {
+                        id: item.snippet.channelId,
+                        name: item.snippet.channelTitle,
+                    },
+                    thumbnail: item.snippet.thumbnails.medium,
+                };
+
+                // Filter out any channel Ids that are in the filter list
+                if (
+                    CHANNEL_FILTER_LIST.some(
+                        (channel) => channel.channelId === result.channel.id
+                    )
+                ) {
+                    nonIndieResults.push(result);
+                } else {
+                    if (resultPage.length < PAGE_LIMIT) {
+                        resultPage.push(result);
+                        videoIds.push(result.id);
+                    } else pageOverflow.push(result);
+                }
+            });
+        }
+
+        console.log(
+            "Page has " +
+                resultPage.length +
+                " of " +
+                PAGE_LIMIT +
+                " results..."
+        );
+        console.log(nonIndieResults.length + " results were not indie...");
+        console.log("Overflowed " + pageOverflow.length + " results...");
+
+        // Request videos API endpoint to retrieve video statistics
+        const videoDetailsResponse = await axios.get(
+            videosEndpoint + videoIds.join("%2C")
+        );
+        videoDetailsResponse.data.items.forEach((item, i) => {
+            resultPage[i] = {
+                ...resultPage[i],
+                duration: convertDurationToTimestamp(
+                    item.contentDetails.duration
+                ),
+                views: item.statistics.viewCount,
+                likes: item.statistics.likeCount,
+                dislikes: item.statistics.dislikeCount,
+            };
+        });
+
+        return {
+            resultPage: resultPage,
+            pageOverflow: pageOverflow,
+            nonIndieCount: nonIndieResults.length,
+            nextPageToken: nextPageToken,
+        };
     } catch (e) {
         console.log("Error: " + e);
     }
