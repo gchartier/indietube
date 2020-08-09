@@ -21,8 +21,9 @@ const InputContainer = styled.form`
 `;
 
 const SearchInput = styled.input`
-    border-radius: 10px;
-    border: solid #ffce80 1.5px;
+    border-radius: 5px;
+    border: none;
+    background-color: white;
     box-shadow: 0 16px 24px 2px rgba(0, 0, 0, 0.14);
     padding: 10px;
     width: 70%;

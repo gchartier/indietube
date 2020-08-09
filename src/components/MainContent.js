@@ -13,6 +13,7 @@ import {
     tempResults,
 } from "../assets/constants.js";
 import convertDurationToTimestamp from "../assets/helperFunctions.js";
+import Loading from "./Loading";
 
 const StyledMainContent = styled.div`
     background-color: #e6e6e6;
@@ -35,11 +36,13 @@ class MainContent extends Component {
             nextPageToken: "",
             pageOverflow: [],
             nonIndieCount: 0,
+            isLoading: false,
         };
 
         this.handleSearchChange = this.handleSearchChange.bind(this);
         this.handleSearchSubmit = this.handleSearchSubmit.bind(this);
         this.getNextPageOfResults = this.getNextPageOfResults.bind(this);
+        this.setIsLoading = this.setIsLoading.bind(this);
     }
 
     handleSearchChange(event) {
@@ -48,6 +51,7 @@ class MainContent extends Component {
 
     handleSearchSubmit(event) {
         event.preventDefault();
+        this.setIsLoading(true);
 
         retrieveSearchResults(this.state).then((results) => {
             this.setState({
@@ -56,10 +60,12 @@ class MainContent extends Component {
                 nonIndieCount: results.nonIndieCount,
                 nextPageToken: results.nextPageToken,
             });
+            this.setIsLoading(false);
         });
     }
 
     getNextPageOfResults() {
+        this.setIsLoading(true);
         retrieveNextSearchResultsPage(this.state).then((results) => {
             const currentPages = this.state.resultPages;
 
@@ -74,18 +80,25 @@ class MainContent extends Component {
                 nonIndieCount: results.nonIndieCount,
                 nextPageToken: results.nextPageToken,
             });
+            this.setIsLoading(false);
         });
+    }
+
+    setIsLoading(isLoading) {
+        this.setState({ isLoading: isLoading });
     }
 
     render() {
         return (
             <StyledMainContent>
+                {this.state.isLoading && <Loading />}
                 <Search
                     searchQuery={this.state.searchQuery}
                     onSearchChange={this.handleSearchChange}
                     onSearchSubmit={this.handleSearchSubmit}
                     nonIndieCount={this.state.nonIndieCount}
                 />
+
                 <ResultList
                     results={this.state.resultPages}
                     scrollHandler={this.getNextPageOfResults}
