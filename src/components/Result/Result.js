@@ -7,12 +7,13 @@ import ResultDetails from "./ResultDetails";
 const ResultContainer = styled.div`
     display: flex;
     flex-direction: column;
-    width: 90%;
+    width: 60%;
+    min-width: 250px;
     border-radius: 5px;
     border: 0 solid black;
     box-shadow: 0 16px 24px 2px rgba(0, 0, 0, 0.14);
     background-color: white;
-    margin: 3% 0 3% 0;
+    margin: 3%;
     padding: 3%;
 `;
 

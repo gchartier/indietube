@@ -11,10 +11,6 @@ const SearchContainer = styled.div`
     padding: 5% 0 5% 0;
     width: 95%;
     max-width: 500px;
-    border-top-left-radius: 25px;
-    border-top-right-radius: 25px;
-    background-color: white;
-    border-bottom: 1px solid black;
 `;
 
 const InputContainer = styled.form`
@@ -46,7 +42,7 @@ const SearchIcon = styled.button`
     background-color: transparent;
 `;
 
-const ResultsContainer = styled.div`
+const SearchDetails = styled.div`
     display: flex;
     width: 100%;
 `;
@@ -67,11 +63,11 @@ function Search(props) {
                 />
                 <SearchIcon type="submit" alt="Submit Search" />
             </InputContainer>
-            <ResultsContainer>
+            <SearchDetails>
                 <ResultsFiltered>
                     {props.nonIndieCount} Non-indie Videos
                 </ResultsFiltered>
-            </ResultsContainer>
+            </SearchDetails>
         </SearchContainer>
     );
 }

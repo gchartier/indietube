@@ -8,6 +8,9 @@ import ResultStats from "./ResultStats";
 const ChannelName = styled.p`
     margin: 0;
     font-size: 0.8rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 `;
 
 const Title = styled.p`
