@@ -1,13 +1,10 @@
 import React from "react";
-import styled from "styled-components";
-
-const NoResultsContainer = styled.div``;
 
 function NoResults() {
     return (
-        <div>
+        <React.Fragment>
             <p>No results...</p>
-        </div>
+        </React.Fragment>
     );
 }
 
