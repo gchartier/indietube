@@ -134,6 +134,8 @@ const CHANNEL_FILTER_LIST = [
     { channelName: "WFLA News Channel 8", channelId: "UCDvJcb8Adv-_bOrtnRLmiDw" },
 ];
 
+const ADD_TO_FILTER = [];
+
 export {
     CHANNEL_URL,
     VIDEO_URL,
@@ -145,4 +147,5 @@ export {
     PAGE_LIMIT,
     CHANNEL_FILTER_LIST,
     REQUEST_LOOP_LIMIT,
+    ADD_TO_FILTER,
 };

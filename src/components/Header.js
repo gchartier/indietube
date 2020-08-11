@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import About from "./About";
+import { ADD_TO_FILTER } from "../assets/constants";
 
 const StyledHeader = styled.header`
     display: flex;
@@ -64,6 +65,16 @@ class Header extends Component {
                     indie<PrimarySpan>Tube</PrimarySpan>
                 </H1>
                 <Nav>
+                    <button
+                        onClick={() => {
+                            let items = ADD_TO_FILTER.map((item) =>
+                                JSON.stringify(item)
+                            );
+                            console.log(items.toString());
+                        }}
+                    >
+                        GET LIST
+                    </button>
                     <NavList>
                         <NavItem onClick={this.openAboutModal}>About</NavItem>
                     </NavList>

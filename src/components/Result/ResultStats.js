@@ -4,6 +4,7 @@ import * as d3 from "d3-format";
 import likesIcon from "../../assets/likes.svg";
 import dislikesIcon from "../../assets/dislikes.svg";
 import viewsIcon from "../../assets/views.svg";
+import { ADD_TO_FILTER } from "../../assets/constants";
 
 const Stats = styled.div`
     display: flex;
@@ -27,6 +28,13 @@ const StatisticIcon = styled.img`
 `;
 
 function ResultStats(props) {
+    function appendToFilter(channel) {
+        ADD_TO_FILTER.push({
+            channelName: channel.name,
+            channelId: channel.id,
+        });
+    }
+
     return (
         <Stats>
             <VideoStatistic>
@@ -56,6 +64,9 @@ function ResultStats(props) {
                 </p>
                 <StatisticIcon src={dislikesIcon} />
             </VideoStatistic>
+            <button onClick={() => appendToFilter(props.result.channel)}>
+                KILL
+            </button>
         </Stats>
     );
 }
