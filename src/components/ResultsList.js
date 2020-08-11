@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import VideoResult from "./Result/Result";
 import styled from "styled-components";
 import { useBottomScrollListener } from "react-bottom-scroll-listener";
@@ -18,6 +18,10 @@ const StyledResults = styled.div`
 
 function ResultList(props) {
     const scrollRef = useBottomScrollListener(() => props.scrollHandler());
+
+    useEffect(() => {
+        if (props.search === true) window.scrollTo(0, 0);
+    }, [props.isSearch]);
 
     return (
         <StyledResults ref={scrollRef}>
