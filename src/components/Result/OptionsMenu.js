@@ -119,7 +119,12 @@ class OptionsMenu extends Component {
                                 Go to Channel
                             </ResultLink>
                         </MenuItem>
-                        <form name="thisIsntIndie" netlify>
+                        <form name="notIndie" method="POST">
+                            <input
+                                type="hidden"
+                                name="form-name"
+                                value="notIndie"
+                            />
                             <input
                                 name="channelId"
                                 type="hidden"
