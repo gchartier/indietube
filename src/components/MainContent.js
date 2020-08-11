@@ -5,6 +5,7 @@ import styled from "styled-components";
 import axios from "axios";
 import convertDurationToTimestamp from "../assets/helperFunctions.js";
 import Loading from "./Loading";
+import NoResults from "./NoResults";
 import {
     API_SEARCH_URL,
     SEARCH_PARAMS,
@@ -12,7 +13,6 @@ import {
     VIDEOS_PARAMS,
     CHANNEL_FILTER_LIST,
     PAGE_LIMIT,
-    tempResults,
 } from "../assets/constants.js";
 
 const StyledMainContent = styled.div`
@@ -31,7 +31,7 @@ class MainContent extends Component {
 
         this.state = {
             searchQuery: "",
-            resultPages: tempResults,
+            resultPages: [],
             currentPage: 0,
             nextPageToken: "",
             pageOverflow: [],
@@ -68,12 +68,6 @@ class MainContent extends Component {
         this.setIsLoading(true);
         retrieveNextSearchResultsPage(this.state).then((results) => {
             const currentPages = this.state.resultPages;
-
-            console.log(
-                "Appending " +
-                    results.resultPage.length +
-                    " results to existing data..."
-            );
             this.setState({
                 resultPages: currentPages.concat(results.resultPage),
                 pageOverflow: results.pageOverflow,
@@ -99,10 +93,14 @@ class MainContent extends Component {
                     nonIndieCount={this.state.nonIndieCount}
                 />
 
-                <ResultList
-                    results={this.state.resultPages}
-                    scrollHandler={this.getNextPageOfResults}
-                />
+                {this.state.resultPages.length > 0 ? (
+                    <ResultList
+                        results={this.state.resultPages}
+                        scrollHandler={this.getNextPageOfResults}
+                    />
+                ) : (
+                    <NoResults />
+                )}
             </StyledMainContent>
         );
     }
@@ -124,7 +122,6 @@ async function retrieveSearchResults(state) {
     try {
         do {
             requestRound++;
-            console.log("Request round " + requestRound);
             searchResponse = await axios.get(
                 nextPageToken !== ""
                     ? searchEndpoint + "&pageToken=" + nextPageToken
@@ -160,16 +157,6 @@ async function retrieveSearchResults(state) {
                 }
             });
         } while (resultPage.length < PAGE_LIMIT && requestRound < 4);
-
-        console.log(
-            "Page has " +
-                resultPage.length +
-                " of " +
-                PAGE_LIMIT +
-                " results..."
-        );
-        console.log(nonIndieResults.length + " results were not indie...");
-        console.log("Overflowed " + pageOverflow.length + " results...");
 
         // Request videos API endpoint to retrieve video statistics
         const videoDetailsResponse = await axios.get(
@@ -219,11 +206,9 @@ async function retrieveNextSearchResultsPage(state) {
             counter++;
             videoIds.push(resultPage[resultPage.length - 1].id);
         }
-        console.log("Pushed " + counter + "overflow results...");
 
         // Retrieve more results if the page is not full
-        while (resultPage.length < PAGE_LIMIT && requestRound < 4) {
-            console.log("Request round " + requestRound);
+        while (resultPage.length < PAGE_LIMIT && requestRound < 6) {
             searchResponse = await axios.get(
                 nextPageToken !== ""
                     ? searchEndpoint + "&pageToken=" + nextPageToken
@@ -260,16 +245,6 @@ async function retrieveNextSearchResultsPage(state) {
                 }
             });
         }
-
-        console.log(
-            "Page has " +
-                resultPage.length +
-                " of " +
-                PAGE_LIMIT +
-                " results..."
-        );
-        console.log(nonIndieResults.length + " results were not indie...");
-        console.log("Overflowed " + pageOverflow.length + " results...");
 
         // Request videos API endpoint to retrieve video statistics
         const videoDetailsResponse = await axios.get(

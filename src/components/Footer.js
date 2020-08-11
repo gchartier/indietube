@@ -4,6 +4,7 @@ import styled from "styled-components";
 const StyledFooter = styled.footer`
     text-align: center;
     font-size: 1.2rem;
+    line-height: 1.1rem;
     background-color: white;
     padding: 2%;
 `;
@@ -24,7 +25,7 @@ function Footer() {
             <P>
                 Built by{" "}
                 <SiteLink
-                    color="#67a36f"
+                    color="#0F9D58"
                     href="https://gabrielchartier.dev"
                     target="_blank"
                 >
@@ -32,11 +33,19 @@ function Footer() {
                 </SiteLink>{" "}
                 using the{" "}
                 <SiteLink
-                    color="tomato"
+                    color="#DB4437"
                     href="https://developers.google.com/youtube/v3/"
                     target="_blank"
                 >
                     YouTube Data API
+                </SiteLink>
+                <br />
+                <SiteLink
+                    color="#4285F4"
+                    target="_blank"
+                    href="https://www.buymeacoffee.com/gabrielchartier"
+                >
+                    Buy me a coffee?
                 </SiteLink>
             </P>
         </StyledFooter>

@@ -65,9 +65,11 @@ function Search(props) {
                 <SearchIcon type="submit" alt="Submit Search" />
             </InputContainer>
             <SearchDetails>
-                <ResultsFiltered>
-                    {props.nonIndieCount} Non-indie Videos
-                </ResultsFiltered>
+                {props.nonIndieCount > 0 && (
+                    <ResultsFiltered>
+                        {props.nonIndieCount} Non-indie Videos
+                    </ResultsFiltered>
+                )}
             </SearchDetails>
         </SearchContainer>
     );

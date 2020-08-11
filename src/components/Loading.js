@@ -21,7 +21,7 @@ function Loading() {
         <LoadingContainer>
             <ReactLoading
                 type={"bubbles"}
-                color={"#ffce80"}
+                color={"#f4b400"}
                 height={"35%"}
                 width={"35%"}
             />
