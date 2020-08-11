@@ -20,7 +20,7 @@ function ResultList(props) {
     const scrollRef = useBottomScrollListener(() => props.scrollHandler());
 
     useEffect(() => {
-        if (props.search === true) window.scrollTo(0, 0);
+        if (props.isSearch === true) window.scrollTo(0, 0);
     }, [props.isSearch]);
 
     return (
