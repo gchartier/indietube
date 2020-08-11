@@ -200,10 +200,8 @@ async function retrieveNextSearchResultsPage(state) {
 
     try {
         // Fill page from overflow if any
-        let counter = 0;
         while (pageOverflow.length > 0 && resultPage.length < PAGE_LIMIT) {
             resultPage.push(pageOverflow.pop());
-            counter++;
             videoIds.push(resultPage[resultPage.length - 1].id);
         }
 
