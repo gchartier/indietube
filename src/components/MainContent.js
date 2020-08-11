@@ -140,7 +140,7 @@ async function retrieveSearchResults(state) {
                 });
             searchData = await searchResponse.data;
             if (searchResponse.status === 200 && searchData.items.length < 1)
-                throw "No results found for your search...";
+                throw Error("No results found for your search...");
 
             nextPageToken = searchData.nextPageToken;
             searchData.items.forEach((item) => {
