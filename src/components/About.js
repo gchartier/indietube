@@ -49,7 +49,7 @@ function About(props) {
                         If you use indieTube, help us make it better! If you
                         notice any results that do not represent our 1 golden
                         rule listed above, click the menu icon on the video and
-                        click "This is not indie!" and the channel will be
+                        click "This isn't indie" and the channel will be
                         submitted for review to be removed from the indieTube
                         results.
                     </p>

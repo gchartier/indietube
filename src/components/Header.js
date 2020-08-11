@@ -6,11 +6,13 @@ const StyledHeader = styled.header`
     display: flex;
     text-align: left;
     justify-content: space-between;
+    padding: 2%;
+    box-shadow: 0px 5px 11px -4px #899380;
 `;
 
 const H1 = styled.h1`
     font-size: 2rem;
-    padding-left: 2%;
+    margin: 0;
 `;
 
 const PrimarySpan = styled.span`
@@ -21,12 +23,13 @@ const Nav = styled.nav`
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 2%;
+    margin: 0;
 `;
 
 const NavList = styled.ul`
     display: flex;
     padding: 0;
+    margin: 0;
 `;
 
 const NavItem = styled.li`

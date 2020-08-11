@@ -3,6 +3,8 @@ import Search from "./Search";
 import ResultList from "./ResultsList";
 import styled from "styled-components";
 import axios from "axios";
+import convertDurationToTimestamp from "../assets/helperFunctions.js";
+import Loading from "./Loading";
 import {
     API_SEARCH_URL,
     SEARCH_PARAMS,
@@ -12,16 +14,14 @@ import {
     PAGE_LIMIT,
     tempResults,
 } from "../assets/constants.js";
-import convertDurationToTimestamp from "../assets/helperFunctions.js";
-import Loading from "./Loading";
 
 const StyledMainContent = styled.div`
-    background-color: #e6e6e6;
-    flex-grow: 1;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
+    flex-grow: 1;
+    background-color: whitesmoke;
+    min-height: 0;
     width: 100%;
 `;
 
