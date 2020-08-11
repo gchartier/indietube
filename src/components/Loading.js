@@ -22,8 +22,8 @@ function Loading() {
             <ReactLoading
                 type={"bubbles"}
                 color={"#f4b400"}
-                height={"35%"}
-                width={"35%"}
+                height={"25%"}
+                width={"25%"}
             />
         </LoadingContainer>,
         document.querySelector("#modal")

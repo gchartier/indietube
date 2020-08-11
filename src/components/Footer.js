@@ -10,8 +10,14 @@ const StyledFooter = styled.footer`
 
 const P = styled.p`
     font-weight: bold;
-    font-size: calc(10px + (20 - 10) * ((100vw - 300px) / (1600 - 300)));
+    font-size: calc(12px + (18 - 12) * ((100vw - 300px) / (1600 - 300)));
     margin: 0;
+`;
+
+const FlexContainer = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
 `;
 
 const SiteLink = styled.a`
@@ -22,23 +28,28 @@ function Footer() {
     return (
         <StyledFooter>
             <P>
-                Built by{" "}
-                <SiteLink
-                    color="#0F9D58"
-                    href="https://gabrielchartier.dev"
-                    target="_blank"
-                >
-                    GabrielChartier.dev
-                </SiteLink>{" "}
-                using the{" "}
-                <SiteLink
-                    color="#DB4437"
-                    href="https://developers.google.com/youtube/v3/"
-                    target="_blank"
-                >
-                    YouTube Data API
-                </SiteLink>
-                <br />
+                <FlexContainer>
+                    <div>
+                        Built by{" "}
+                        <SiteLink
+                            color="#0F9D58"
+                            href="https://gabrielchartier.dev"
+                            target="_blank"
+                        >
+                            GabrielChartier.dev
+                        </SiteLink>
+                    </div>
+                    <div>
+                        &nbsp;using the{" "}
+                        <SiteLink
+                            color="#DB4437"
+                            href="https://developers.google.com/youtube/v3/"
+                            target="_blank"
+                        >
+                            YouTube Data API
+                        </SiteLink>
+                    </div>
+                </FlexContainer>
                 <SiteLink
                     color="#4285F4"
                     target="_blank"

@@ -67,7 +67,7 @@ function Search(props) {
             <SearchDetails>
                 {props.nonIndieCount > 0 && (
                     <ResultsFiltered>
-                        {props.nonIndieCount} Non-indie Videos
+                        {props.nonIndieCount} videos filtered out
                     </ResultsFiltered>
                 )}
             </SearchDetails>

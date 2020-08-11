@@ -1,6 +1,7 @@
 // Results
 const RESULTS_LIMIT = 50;
 const PAGE_LIMIT = 10;
+const REQUEST_LOOP_LIMIT = 5;
 
 // URLs
 const BASE_CONTENT_URL = "https://www.youtube.com/";
@@ -143,4 +144,5 @@ export {
     RESULTS_LIMIT,
     PAGE_LIMIT,
     CHANNEL_FILTER_LIST,
+    REQUEST_LOOP_LIMIT,
 };
