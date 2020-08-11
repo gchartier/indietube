@@ -60,12 +60,7 @@ function ResultDetails(props) {
                 <ChannelName>
                     {"by "}
                     <ResultLink href={props.channelURL} target="_blank">
-                        {
-                            props.result.channel
-                                .name /*+
-                            " " +
-                        this.props.result.channel.id*/
-                        }
+                        {props.result.channel.name}
                     </ResultLink>
                 </ChannelName>
                 <Divider src={dividerIcon} />

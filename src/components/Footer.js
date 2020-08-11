@@ -14,7 +14,7 @@ const P = styled.p`
     margin: 0;
 `;
 
-const FlexContainer = styled.div`
+const FlexContainer = styled.span`
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -29,7 +29,7 @@ function Footer() {
         <StyledFooter>
             <P>
                 <FlexContainer>
-                    <div>
+                    <span>
                         Built by{" "}
                         <SiteLink
                             color="#0F9D58"
@@ -38,8 +38,8 @@ function Footer() {
                         >
                             GabrielChartier.dev
                         </SiteLink>
-                    </div>
-                    <div>
+                    </span>
+                    <span>
                         &nbsp;using the{" "}
                         <SiteLink
                             color="#DB4437"
@@ -48,7 +48,7 @@ function Footer() {
                         >
                             YouTube Data API
                         </SiteLink>
-                    </div>
+                    </span>
                 </FlexContainer>
                 <SiteLink
                     color="#4285F4"
