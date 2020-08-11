@@ -13,6 +13,7 @@ import {
     VIDEOS_PARAMS,
     CHANNEL_FILTER_LIST,
     PAGE_LIMIT,
+    REQUEST_LOOP_LIMIT,
 } from "../assets/constants.js";
 
 const StyledMainContent = styled.div`
@@ -71,7 +72,7 @@ class MainContent extends Component {
             this.setState({
                 resultPages: currentPages.concat(results.resultPage),
                 pageOverflow: results.pageOverflow,
-                nonIndieCount: results.nonIndieCount,
+                nonIndieCount: this.state.nonIndieCount + results.nonIndieCount,
                 nextPageToken: results.nextPageToken,
             });
             this.setIsLoading(false);
@@ -106,6 +107,12 @@ class MainContent extends Component {
     }
 }
 
+function HTTPException(error) {
+    this.status = error.response.status;
+    this.name = "HTTPException";
+    this.message = error.message;
+}
+
 async function retrieveSearchResults(state) {
     let searchEndpoint =
         API_SEARCH_URL + "&q=" + state.searchQuery + SEARCH_PARAMS;
@@ -122,12 +129,18 @@ async function retrieveSearchResults(state) {
     try {
         do {
             requestRound++;
-            searchResponse = await axios.get(
-                nextPageToken !== ""
-                    ? searchEndpoint + "&pageToken=" + nextPageToken
-                    : searchEndpoint
-            );
+            searchResponse = await axios
+                .get(
+                    nextPageToken !== ""
+                        ? searchEndpoint + "&pageToken=" + nextPageToken
+                        : searchEndpoint
+                )
+                .catch((error) => {
+                    throw new HTTPException(error);
+                });
             searchData = await searchResponse.data;
+            if (searchResponse.status === 200 && searchData.items.length < 1)
+                throw "No results found for your search...";
 
             nextPageToken = searchData.nextPageToken;
             searchData.items.forEach((item) => {
@@ -156,12 +169,17 @@ async function retrieveSearchResults(state) {
                     } else pageOverflow.push(result);
                 }
             });
-        } while (resultPage.length < PAGE_LIMIT && requestRound < 4);
+        } while (
+            resultPage.length < PAGE_LIMIT &&
+            requestRound < REQUEST_LOOP_LIMIT
+        );
 
         // Request videos API endpoint to retrieve video statistics
-        const videoDetailsResponse = await axios.get(
-            videosEndpoint + videoIds.join("%2C")
-        );
+        const videoDetailsResponse = await axios
+            .get(videosEndpoint + videoIds.join("%2C"))
+            .catch((error) => {
+                throw new HTTPException(error);
+            });
         videoDetailsResponse.data.items.forEach((item, i) => {
             resultPage[i] = {
                 ...resultPage[i],
@@ -180,8 +198,16 @@ async function retrieveSearchResults(state) {
             nonIndieCount: nonIndieResults.length,
             nextPageToken: nextPageToken,
         };
-    } catch (e) {
-        console.log("Error: " + e);
+    } catch (error) {
+        if (error instanceof HTTPException) {
+            alert("Something went wrong...");
+        } else alert(error);
+        return {
+            resultPage: [],
+            pageOverflow: [],
+            nonIndieCount: 0,
+            nextPageToken: "",
+        };
     }
 }
 
@@ -206,12 +232,19 @@ async function retrieveNextSearchResultsPage(state) {
         }
 
         // Retrieve more results if the page is not full
-        while (resultPage.length < PAGE_LIMIT && requestRound < 6) {
-            searchResponse = await axios.get(
-                nextPageToken !== ""
-                    ? searchEndpoint + "&pageToken=" + nextPageToken
-                    : searchEndpoint
-            );
+        while (
+            resultPage.length < PAGE_LIMIT &&
+            requestRound < REQUEST_LOOP_LIMIT
+        ) {
+            searchResponse = await axios
+                .get(
+                    nextPageToken !== ""
+                        ? searchEndpoint + "&pageToken=" + nextPageToken
+                        : searchEndpoint
+                )
+                .catch((error) => {
+                    throw new HTTPException(error);
+                });
             searchData = await searchResponse.data;
 
             requestRound++;
@@ -245,9 +278,11 @@ async function retrieveNextSearchResultsPage(state) {
         }
 
         // Request videos API endpoint to retrieve video statistics
-        const videoDetailsResponse = await axios.get(
-            videosEndpoint + videoIds.join("%2C")
-        );
+        const videoDetailsResponse = await axios
+            .get(videosEndpoint + videoIds.join("%2C"))
+            .catch((error) => {
+                throw new HTTPException(error);
+            });
         videoDetailsResponse.data.items.forEach((item, i) => {
             resultPage[i] = {
                 ...resultPage[i],
@@ -266,8 +301,16 @@ async function retrieveNextSearchResultsPage(state) {
             nonIndieCount: nonIndieResults.length,
             nextPageToken: nextPageToken,
         };
-    } catch (e) {
-        console.log("Error: " + e);
+    } catch (error) {
+        if (error instanceof HTTPException) {
+            alert("Something went wrong...");
+        } else alert(error);
+        return {
+            resultPage: [],
+            pageOverflow: [],
+            nonIndieCount: 0,
+            nextPageToken: "",
+        };
     }
 }
 
