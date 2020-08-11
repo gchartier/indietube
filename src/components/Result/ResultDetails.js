@@ -48,7 +48,12 @@ function ResultDetails(props) {
                     target="_blank"
                     textDecor="none"
                 >
-                    {props.result.title}
+                    {
+                        new DOMParser().parseFromString(
+                            props.result.title,
+                            "text/html"
+                        ).documentElement.textContent
+                    }
                 </ResultLink>
             </Title>
             <FlexContainer>

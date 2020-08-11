@@ -16,7 +16,7 @@ const H1 = styled.h1`
 `;
 
 const PrimarySpan = styled.span`
-    color: #ffce80;
+    color: #f4b400;
 `;
 
 const Nav = styled.nav`
@@ -37,7 +37,7 @@ const NavItem = styled.li`
     list-style: none;
     cursor: pointer;
     font-weight: bold;
-    color: #ffce80;
+    color: #f4b400;
     font-size: 1.3rem;
 `;
 
