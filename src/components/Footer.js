@@ -4,12 +4,14 @@ import styled from "styled-components";
 const StyledFooter = styled.footer`
     text-align: center;
     font-size: 1.2rem;
-    background-color: #e6e6e6;
+    background-color: white;
+    padding: 2%;
 `;
 
 const P = styled.p`
     font-weight: bold;
-    line-height: 2rem;
+    font-size: calc(10px + (20 - 10) * ((100vw - 300px) / (1600 - 300)));
+    margin: 0;
 `;
 
 const SiteLink = styled.a`
@@ -27,9 +29,8 @@ function Footer() {
                     target="_blank"
                 >
                     GabrielChartier.dev
-                </SiteLink>
-                <br />
-                Using the{" "}
+                </SiteLink>{" "}
+                using the{" "}
                 <SiteLink
                     color="tomato"
                     href="https://developers.google.com/youtube/v3/"

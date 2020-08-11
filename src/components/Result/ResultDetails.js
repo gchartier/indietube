@@ -14,7 +14,7 @@ const ChannelName = styled.p`
 `;
 
 const Title = styled.p`
-    font-size: 1.2rem;
+    font-size: 1rem;
     margin: 0;
 `;
 
@@ -73,6 +73,7 @@ function ResultDetails(props) {
                 <OptionsMenu
                     videoURL={props.videoURL}
                     channelURL={props.channelURL}
+                    channel={props.result.channel}
                 />
             </FlexContainer>
         </div>

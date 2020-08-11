@@ -44,6 +44,15 @@ const ResultLink = styled.a`
     text-decoration: ${(props) => props.textDecor || "underline"};
 `;
 
+const MenuButton = styled.button`
+    border: none;
+    background-color: inherit;
+    font-size: inherit;
+    width: 100%;
+    text-align: left;
+    padding: 0;
+`;
+
 class OptionsMenu extends Component {
     constructor(props) {
         super(props);
@@ -98,7 +107,7 @@ class OptionsMenu extends Component {
                                 target="_blank"
                                 textDecor="none"
                             >
-                                Open With YouTube.com
+                                Open with YouTube.com
                             </ResultLink>
                         </MenuItem>
                         <MenuItem onClick={this.handleMenuClick}>
@@ -110,7 +119,27 @@ class OptionsMenu extends Component {
                                 Go to Channel
                             </ResultLink>
                         </MenuItem>
-                        <MenuItem>This is not indie!</MenuItem>
+                        <form
+                            name="thisIsntIndie"
+                            method="POST"
+                            data-netlify="true"
+                        >
+                            <input
+                                name="channelId"
+                                type="hidden"
+                                value={this.props.channel.id}
+                            />
+                            <input
+                                name="channelName"
+                                type="hidden"
+                                value={this.props.channel.name}
+                            />
+                            <MenuItem>
+                                <MenuButton type="submit">
+                                    This isn't indie
+                                </MenuButton>
+                            </MenuItem>
+                        </form>
                     </Menu>
                 )}
             </ResultOptions>

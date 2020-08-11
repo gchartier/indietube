@@ -4,14 +4,16 @@ import styled from "styled-components";
 import { useBottomScrollListener } from "react-bottom-scroll-listener";
 
 const StyledResults = styled.div`
-    background-color: #e6e6e6;
-    width: 75%;
-    min-width: 300px;
-    max-height: 500px;
-    overflow: scroll;
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+    flex-grow: 1;
+    flex-wrap: wrap;
+    width: 100%;
+    min-height: 0;
+    overflow: scroll;
+    background-color: whitesmoke;
 `;
 
 function ResultList(props) {
