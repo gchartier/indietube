@@ -31,28 +31,34 @@ function ResultStats(props) {
         <Stats>
             <VideoStatistic>
                 <p>
-                    {d3.formatPrefix(
-                        ".1~s",
-                        props.result.views
-                    )(props.result.views)}
+                    {props.result.views !== undefined
+                        ? d3.formatPrefix(
+                              ".1~s",
+                              props.result.views
+                          )(props.result.views)
+                        : 0}
                 </p>
                 <StatisticIcon src={viewsIcon} />
             </VideoStatistic>
             <VideoStatistic>
                 <p>
-                    {d3.formatPrefix(
-                        ".1~s",
-                        props.result.likes
-                    )(props.result.likes)}
+                    {props.result.likes !== undefined
+                        ? d3.formatPrefix(
+                              ".1~s",
+                              props.result.likes
+                          )(props.result.likes)
+                        : 0}
                 </p>
                 <StatisticIcon src={likesIcon} />
             </VideoStatistic>
             <VideoStatistic>
                 <p>
-                    {d3.formatPrefix(
-                        ".1~s",
-                        props.result.dislikes
-                    )(props.result.dislikes)}
+                    {props.result.dislikes !== undefined
+                        ? d3.formatPrefix(
+                              ".1~s",
+                              props.result.dislikes
+                          )(props.result.dislikes)
+                        : 0}
                 </p>
                 <StatisticIcon src={dislikesIcon} />
             </VideoStatistic>
