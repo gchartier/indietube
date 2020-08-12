@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import optionsMenu from "../../assets/menu.svg";
+import { encode } from "querystring";
 
 const ResultOptions = styled.div`
     position: relative;
@@ -91,6 +92,24 @@ class OptionsMenu extends Component {
         }
     };
 
+    handleSubmit = (event) => {
+        event.preventDefault();
+
+        // prettier-ignore
+        fetch("/", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: encode({
+                "form-name": "notIndie",
+                "channelId": event.target.children[0].value,
+                "channelName": event.target.children[1].value,
+            }),
+        })
+            .then(() => alert("Thanks!"))
+            .catch((error) => console.log(error))
+            .finally(() => this.handleMenuClick());
+    };
+
     render() {
         return (
             <ResultOptions>
@@ -119,7 +138,7 @@ class OptionsMenu extends Component {
                                 Go to Channel
                             </ResultLink>
                         </MenuItem>
-                        <form name="thisIsntIndie" netlify>
+                        <form onSubmit={this.handleSubmit}>
                             <input
                                 name="channelId"
                                 type="hidden"

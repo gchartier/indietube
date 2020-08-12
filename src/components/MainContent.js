@@ -11,10 +11,10 @@ import {
     SEARCH_PARAMS,
     API_VIDEOS_URL,
     VIDEOS_PARAMS,
-    CHANNEL_FILTER_LIST,
     PAGE_LIMIT,
     REQUEST_LOOP_LIMIT,
 } from "../assets/constants.js";
+import { CHANNEL_FILTER_LIST } from "../assets/channelFilter";
 
 const StyledMainContent = styled.div`
     display: flex;
@@ -38,6 +38,7 @@ class MainContent extends Component {
             pageOverflow: [],
             nonIndieCount: 0,
             isLoading: false,
+            isSearch: true,
         };
 
         this.handleSearchChange = this.handleSearchChange.bind(this);
@@ -98,6 +99,7 @@ class MainContent extends Component {
                     <ResultList
                         results={this.state.resultPages}
                         scrollHandler={this.getNextPageOfResults}
+                        isSearch={this.state.isSearch}
                     />
                 ) : (
                     <NoResults />
@@ -200,13 +202,18 @@ async function retrieveSearchResults(state) {
         };
     } catch (error) {
         if (error instanceof HTTPException) {
-            alert("Something went wrong...");
+            if (error.status === 403)
+                alert(
+                    "indieTube has exceeded it's daily quota for the YouTube Data API. Check back tomorrow. :("
+                );
+            else alert("Something went wrong...");
         } else alert(error);
         return {
             resultPage: [],
             pageOverflow: [],
             nonIndieCount: 0,
             nextPageToken: "",
+            isSearch: true,
         };
     }
 }
@@ -303,13 +310,18 @@ async function retrieveNextSearchResultsPage(state) {
         };
     } catch (error) {
         if (error instanceof HTTPException) {
-            alert("Something went wrong...");
+            if (error.status === 403)
+                alert(
+                    "indieTube has exceeded it's daily quota for the YouTube Data API. Check back tomorrow. :("
+                );
+            else alert("Something went wrong...");
         } else alert(error);
         return {
             resultPage: [],
             pageOverflow: [],
             nonIndieCount: 0,
             nextPageToken: "",
+            isSearch: false,
         };
     }
 }
