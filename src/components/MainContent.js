@@ -202,7 +202,11 @@ async function retrieveSearchResults(state) {
         };
     } catch (error) {
         if (error instanceof HTTPException) {
-            alert("Something went wrong...");
+            if (error.status === 403)
+                alert(
+                    "indieTube has exceeded it's daily quota for the YouTube Data API. Check back tomorrow. :("
+                );
+            else alert("Something went wrong...");
         } else alert(error);
         return {
             resultPage: [],
@@ -306,7 +310,11 @@ async function retrieveNextSearchResultsPage(state) {
         };
     } catch (error) {
         if (error instanceof HTTPException) {
-            alert("Something went wrong...");
+            if (error.status === 403)
+                alert(
+                    "indieTube has exceeded it's daily quota for the YouTube Data API. Check back tomorrow. :("
+                );
+            else alert("Something went wrong...");
         } else alert(error);
         return {
             resultPage: [],
