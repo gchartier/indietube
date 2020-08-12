@@ -321,7 +321,7 @@ async function retrieveNextSearchResultsPage(state) {
             pageOverflow: [],
             nonIndieCount: 0,
             nextPageToken: "",
-            isSearch: false,
+            isSearch: true,
         };
     }
 }
