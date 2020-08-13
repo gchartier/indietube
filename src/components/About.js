@@ -1,5 +1,5 @@
 import React from "react";
-import Modal from "./Modal";
+import Modal from "./reusable/Modal";
 
 const subheading = { fontSize: "1.5rem" };
 const subheadingCenter = { ...subheading, textAlign: "center" };
