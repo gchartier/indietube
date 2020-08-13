@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { CHANNEL_URL, VIDEO_URL } from "../../assets/constants.js";
+import { CHANNEL_URL, VIDEO_URL } from "../../services/constants.js";
 import ResultThumbnail from "./ResultThumbnail";
 import ResultDetails from "./ResultDetails";
 

@@ -3,8 +3,8 @@ import Search from "./Search";
 import ResultList from "./ResultsList";
 import styled from "styled-components";
 import axios from "axios";
-import convertDurationToTimestamp from "../assets/helperFunctions.js";
-import Loading from "./Loading";
+import convertDurationToTimestamp from "../services/helperFunctions.js";
+import Loading from "./reusable/Loading";
 import NoResults from "./NoResults";
 import {
     API_SEARCH_URL,
@@ -13,8 +13,8 @@ import {
     VIDEOS_PARAMS,
     PAGE_LIMIT,
     REQUEST_LOOP_LIMIT,
-} from "../assets/constants.js";
-import { CHANNEL_FILTER_LIST } from "../assets/channelFilter";
+} from "../services/constants.js";
+import { CHANNEL_FILTER_LIST } from "../services/channelFilter";
 
 const StyledMainContent = styled.div`
     display: flex;

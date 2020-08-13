@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import VideoResult from "./Result/Result";
+import VideoResult from "./result/Result";
 import styled from "styled-components";
 import { useBottomScrollListener } from "react-bottom-scroll-listener";
 
