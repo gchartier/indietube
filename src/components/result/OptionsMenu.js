@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import optionsMenu from "../../assets/menu.svg";
 import { encode } from "querystring";
@@ -54,45 +54,31 @@ const MenuButton = styled.button`
     padding: 0;
 `;
 
-class OptionsMenu extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            menuIsVisible: false,
-        };
+function OptionsMenu(props) {
+    const [isMenuVisible, setIsMenuVisible] = useState(false);
+    const menuContainer = React.createRef();
 
-        this.menuContainer = React.createRef();
-
-        this.handleMenuClick = this.handleMenuClick.bind(this);
-    }
-
-    componentDidMount() {
-        document.addEventListener("mousedown", this.handleClickOutside);
-    }
-    componentWillUnmount() {
-        document.removeEventListener("mousedown", this.handleClickOutside);
-    }
-
-    handleMenuClick = () => {
-        this.setState((state) => {
-            return {
-                menuIsVisible: !state.menuIsVisible,
-            };
-        });
-    };
-
-    handleClickOutside = (event) => {
-        if (
-            this.menuContainer.current &&
-            !this.menuContainer.current.contains(event.target)
-        ) {
-            this.setState({
-                menuIsVisible: false,
-            });
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (
+                menuContainer.current &&
+                !menuContainer.current.contains(event.target)
+            ) {
+                setIsMenuVisible(false);
+            }
         }
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return function cleanup() {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    });
+
+    const handleMenuClick = () => {
+        setIsMenuVisible(!isMenuVisible);
     };
 
-    handleSubmit = (event) => {
+    const handleSubmit = (event) => {
         event.preventDefault();
 
         // prettier-ignore
@@ -107,59 +93,57 @@ class OptionsMenu extends Component {
         })
             .then(() => alert("Thanks!"))
             .catch((error) => console.log(error))
-            .finally(() => this.handleMenuClick());
+            .finally(() => handleMenuClick());
     };
 
-    render() {
-        return (
-            <ResultOptions>
-                <MenuIcon
-                    src={optionsMenu}
-                    alt="Result Options"
-                    onClick={this.handleMenuClick}
-                />
-                {this.state.menuIsVisible && (
-                    <Menu ref={this.menuContainer}>
-                        <MenuItem onClick={this.handleMenuClick}>
-                            <ResultLink
-                                href={this.props.videoURL}
-                                target="_blank"
-                                textDecor="none"
-                            >
-                                Open with YouTube.com
-                            </ResultLink>
+    return (
+        <ResultOptions>
+            <MenuIcon
+                src={optionsMenu}
+                alt="Result Options"
+                onClick={handleMenuClick}
+            />
+            {isMenuVisible && (
+                <Menu ref={menuContainer}>
+                    <MenuItem onClick={handleMenuClick}>
+                        <ResultLink
+                            href={props.videoURL}
+                            target="_blank"
+                            textDecor="none"
+                        >
+                            Open with YouTube.com
+                        </ResultLink>
+                    </MenuItem>
+                    <MenuItem onClick={handleMenuClick}>
+                        <ResultLink
+                            href={props.channelURL}
+                            target="_blank"
+                            textDecor="none"
+                        >
+                            Go to Channel
+                        </ResultLink>
+                    </MenuItem>
+                    <form onSubmit={handleSubmit}>
+                        <input
+                            name="channelId"
+                            type="hidden"
+                            value={props.channel.id}
+                        />
+                        <input
+                            name="channelName"
+                            type="hidden"
+                            value={props.channel.name}
+                        />
+                        <MenuItem>
+                            <MenuButton type="submit">
+                                This isn't indie
+                            </MenuButton>
                         </MenuItem>
-                        <MenuItem onClick={this.handleMenuClick}>
-                            <ResultLink
-                                href={this.props.channelURL}
-                                target="_blank"
-                                textDecor="none"
-                            >
-                                Go to Channel
-                            </ResultLink>
-                        </MenuItem>
-                        <form onSubmit={this.handleSubmit}>
-                            <input
-                                name="channelId"
-                                type="hidden"
-                                value={this.props.channel.id}
-                            />
-                            <input
-                                name="channelName"
-                                type="hidden"
-                                value={this.props.channel.name}
-                            />
-                            <MenuItem>
-                                <MenuButton type="submit">
-                                    This isn't indie
-                                </MenuButton>
-                            </MenuItem>
-                        </form>
-                    </Menu>
-                )}
-            </ResultOptions>
-        );
-    }
+                    </form>
+                </Menu>
+            )}
+        </ResultOptions>
+    );
 }
 
 export default OptionsMenu;
