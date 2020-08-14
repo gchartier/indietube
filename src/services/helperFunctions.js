@@ -1,28 +1,19 @@
-function convertDurationToTimestamp(ISODuration) {
-    let timestamp = "";
-    const matches = ISODuration.match(
-        /((?<hours>\d{0,2})H)?((?<minutes>\d{0,2})M)?(?<seconds>\d{0,2})S/
-    );
+import moment from "moment";
+const momentDurationFormatSetup = require("moment-duration-format");
+momentDurationFormatSetup(moment);
 
-    if (matches) {
-        if (matches.groups.hours)
-            timestamp = timestamp.concat(matches.groups.hours + ":");
+function formatVideoDuration(duration) {
+    let formattedDuration = duration;
 
-        if (matches.groups.minutes) {
-            if (matches.groups.hours && matches.groups.minutes.length === 1)
-                timestamp = timestamp.concat(
-                    "0" + matches.groups.minutes + ":"
-                );
-            else timestamp = timestamp.concat(matches.groups.minutes + ":");
-        } else timestamp = timestamp.concat("0:");
-
-        if (matches.groups.seconds) {
-            if (matches.groups.seconds.length === 1)
-                timestamp = timestamp.concat("0" + matches.groups.seconds);
-            else timestamp = timestamp.concat(matches.groups.seconds);
-        }
+    if (duration === "P0D") return "LIVE";
+    else {
+        formattedDuration = moment
+            .duration(formattedDuration)
+            .format("hh:mm:ss");
+        if (formattedDuration.length < 3)
+            formattedDuration = "0:" + formattedDuration;
     }
-    return timestamp;
+    return formattedDuration;
 }
 
-export default convertDurationToTimestamp;
+export default formatVideoDuration;
