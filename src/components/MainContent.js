@@ -42,96 +42,55 @@ class MainContent extends Component {
             isSearch: true,
         };
 
+        this.getSearchResults = this.getSearchResults.bind(this);
+        this.getNextResultsPage = this.getNextResultsPage.bind(this);
         this.handleSearchChange = this.handleSearchChange.bind(this);
         this.handleSearchSubmit = this.handleSearchSubmit.bind(this);
         this.setIsLoading = this.setIsLoading.bind(this);
-        this.getSearchResults = this.getSearchResults.bind(this);
-        this.getNextResultsPage = this.getNextResultsPage.bind(this);
+        this.getSearchListResp = this.getSearchListResp.bind(this);
+        this.getVideoListResp = this.getVideoListResp.bind(this);
+        this.filterResultsByChannel = this.filterResultsByChannel.bind(this);
+        this.handleResultsError = this.handleResultsError.bind(this);
     }
 
     async getSearchResults() {
-        let searchEndpoint =
-            API_SEARCH_URL + "&q=" + this.state.searchQuery + SEARCH_PARAMS;
-        const videosEndpoint = API_VIDEOS_URL + VIDEOS_PARAMS;
         const videoIds = [];
         const resultPage = [];
         const pageOverflow = [];
         const nonIndieResults = [];
         let requestRound = 0;
-        let searchResponse = "";
-        let searchData = "";
+        let videoDetailsResponse = "";
         let nextPageToken = "";
 
         try {
             this.setIsLoading(true);
 
+            // Retrieve search results until the page is full
             do {
                 requestRound++;
-                searchResponse = await axios
-                    .get(
-                        nextPageToken !== ""
-                            ? searchEndpoint + "&pageToken=" + nextPageToken
-                            : searchEndpoint
-                    )
-                    .catch((error) => {
-                        throw new HTTPException(error);
-                    });
-                searchData = await searchResponse.data;
+                const searchListResp = this.getSearchListResp(nextPageToken);
+                nextPageToken = searchListResp.data.nextPageToken;
+
                 if (
-                    searchResponse.status === 200 &&
-                    searchData.items.length < 1
+                    searchListResp.status === 200 &&
+                    searchListResp.data.items.length < 1
                 )
                     throw Error("No results found for your search...");
 
-                nextPageToken = searchData.nextPageToken;
-                searchData.items.forEach((item) => {
-                    const result = {
-                        id: item.id.videoId,
-                        title: item.snippet.title,
-                        publishDate: item.snippet.publishedAt,
-                        channel: {
-                            id: item.snippet.channelId,
-                            name: item.snippet.channelTitle,
-                        },
-                        thumbnail: item.snippet.thumbnails.medium,
-                    };
-
-                    // Filter out any channel Ids that are in the filter list
-                    if (
-                        CHANNEL_FILTER_LIST.some(
-                            (channel) => channel.channelId === result.channel.id
-                        )
-                    ) {
-                        nonIndieResults.push(result);
-                    } else {
-                        if (resultPage.length < PAGE_LIMIT) {
-                            resultPage.push(result);
-                            videoIds.push(result.id);
-                        } else pageOverflow.push(result);
-                    }
-                });
+                this.filterResultsByChannel(
+                    searchListResp.data.items,
+                    result,
+                    nonIndieResults,
+                    resultPage,
+                    videoIds,
+                    pageOverflow
+                );
             } while (
                 resultPage.length < PAGE_LIMIT &&
                 requestRound < REQUEST_LOOP_LIMIT
             );
 
-            // Request videos API endpoint to retrieve video statistics
-            const videoDetailsResponse = await axios
-                .get(videosEndpoint + videoIds.join("%2C"))
-                .catch((error) => {
-                    throw new HTTPException(error);
-                });
-            videoDetailsResponse.data.items.forEach((item, i) => {
-                resultPage[i] = {
-                    ...resultPage[i],
-                    duration: convertDurationToTimestamp(
-                        item.contentDetails.duration
-                    ),
-                    views: item.statistics.viewCount,
-                    likes: item.statistics.likeCount,
-                    dislikes: item.statistics.dislikeCount,
-                };
-            });
+            this.getVideoListResp(resultPage);
 
             this.setState({
                 resultPages: resultPage,
@@ -140,112 +99,50 @@ class MainContent extends Component {
                 nextPageToken: nextPageToken,
                 isSearch: true,
             });
+
             this.setIsLoading(false);
         } catch (error) {
-            if (error instanceof HTTPException) {
-                if (error.status === 403)
-                    alert(
-                        "indieTube has exceeded it's daily quota for the YouTube Data API. Check back tomorrow. :("
-                    );
-                else alert("Something went wrong...");
-            } else alert(error);
-
-            this.setState({
-                resultPages: [],
-                pageOverflow: [],
-                nonIndieCount: 0,
-                nextPageToken: "",
-                isSearch: true,
-            });
-            this.setIsLoading(false);
+            this.handleResultsError(error, true);
         }
     }
 
     async getNextResultsPage() {
-        let searchEndpoint =
-            API_SEARCH_URL + "&q=" + this.state.searchQuery + SEARCH_PARAMS;
-        const videosEndpoint = API_VIDEOS_URL + VIDEOS_PARAMS;
         const videoIds = [];
         const resultPage = [];
         const pageOverflow = this.state.pageOverflow;
         const nonIndieResults = [];
         let requestRound = 0;
-        let searchResponse = "";
-        let searchData = "";
         let nextPageToken = this.state.nextPageToken;
 
         try {
             this.setIsLoading(true);
 
-            // Fill page from overflow if any
+            // Fill result page from overflow if any
             while (pageOverflow.length > 0 && resultPage.length < PAGE_LIMIT) {
                 resultPage.push(pageOverflow.pop());
                 videoIds.push(resultPage[resultPage.length - 1].id);
             }
 
-            // Retrieve more results if the page is not full
+            // Retrieve results until the result page is full
             while (
                 resultPage.length < PAGE_LIMIT &&
                 requestRound < REQUEST_LOOP_LIMIT
             ) {
-                searchResponse = await axios
-                    .get(
-                        nextPageToken !== ""
-                            ? searchEndpoint + "&pageToken=" + nextPageToken
-                            : searchEndpoint
-                    )
-                    .catch((error) => {
-                        throw new HTTPException(error);
-                    });
-                searchData = await searchResponse.data;
-
                 requestRound++;
-                nextPageToken = searchData.nextPageToken;
-                searchData.items.forEach((item) => {
-                    const result = {
-                        id: item.id.videoId,
-                        title: item.snippet.title,
-                        publishDate: item.snippet.publishedAt,
-                        channel: {
-                            id: item.snippet.channelId,
-                            name: item.snippet.channelTitle,
-                        },
-                        thumbnail: item.snippet.thumbnails.medium,
-                    };
+                const searchListResp = this.getSearchListResp(nextPageToken);
+                nextPageToken = searchListResp.data.nextPageToken;
 
-                    // Filter out any channel Ids that are in the filter list
-                    if (
-                        CHANNEL_FILTER_LIST.some(
-                            (channel) => channel.channelId === result.channel.id
-                        )
-                    ) {
-                        nonIndieResults.push(result);
-                    } else {
-                        if (resultPage.length < PAGE_LIMIT) {
-                            resultPage.push(result);
-                            videoIds.push(result.id);
-                        } else pageOverflow.push(result);
-                    }
-                });
+                this.filterResultsByChannel(
+                    searchListResp.data.items,
+                    result,
+                    nonIndieResults,
+                    resultPage,
+                    videoIds,
+                    pageOverflow
+                );
             }
 
-            // Request videos API endpoint to retrieve video statistics
-            const videoDetailsResponse = await axios
-                .get(videosEndpoint + videoIds.join("%2C"))
-                .catch((error) => {
-                    throw new HTTPException(error);
-                });
-            videoDetailsResponse.data.items.forEach((item, i) => {
-                resultPage[i] = {
-                    ...resultPage[i],
-                    duration: convertDurationToTimestamp(
-                        item.contentDetails.duration
-                    ),
-                    views: item.statistics.viewCount,
-                    likes: item.statistics.likeCount,
-                    dislikes: item.statistics.dislikeCount,
-                };
-            });
+            this.getVideoListResp(resultPage);
 
             this.setState((state) => {
                 return {
@@ -259,19 +156,7 @@ class MainContent extends Component {
 
             this.setIsLoading(false);
         } catch (error) {
-            if (error instanceof HTTPException) {
-                if (error.status === 403)
-                    alert(
-                        "indieTube has exceeded it's daily quota for the YouTube Data API. Check back tomorrow. :("
-                    );
-                else alert("Something went wrong...");
-            } else alert(error);
-
-            this.setState({
-                nextPageToken: "",
-                isSearch: false,
-            });
-            this.setIsLoading(false);
+            this.handleResultsError(error, false);
         }
     }
 
@@ -286,6 +171,103 @@ class MainContent extends Component {
 
     setIsLoading(isLoading) {
         this.setState({ isLoading: isLoading });
+    }
+
+    async getSearchListResp(nextPageToken) {
+        let searchEndpoint =
+            API_SEARCH_URL + "&q=" + this.state.searchQuery + SEARCH_PARAMS;
+
+        const searchResponse = await axios
+            .get(
+                nextPageToken !== ""
+                    ? searchEndpoint + "&pageToken=" + nextPageToken
+                    : searchEndpoint
+            )
+            .catch((error) => {
+                throw new HTTPException(error);
+            });
+
+        return { status: response.status, data: await searchResponse.data };
+    }
+
+    async getVideoListResp(resultPage) {
+        const videosEndpoint = API_VIDEOS_URL + VIDEOS_PARAMS;
+        const videoDetailsResponse = await axios
+            .get(videosEndpoint + videoIds.join("%2C"))
+            .catch((error) => {
+                throw new HTTPException(error);
+            });
+        videoDetailsResponse.data.items.forEach((item, i) => {
+            resultPage[i] = {
+                ...resultPage[i],
+                duration: convertDurationToTimestamp(
+                    item.contentDetails.duration
+                ),
+                views: item.statistics.viewCount,
+                likes: item.statistics.likeCount,
+                dislikes: item.statistics.dislikeCount,
+            };
+        });
+    }
+
+    filterResultsByChannel(
+        results,
+        nonIndieResults,
+        resultPage,
+        videoIds,
+        pageOverflow
+    ) {
+        results.forEach((item) => {
+            const result = {
+                id: item.id.videoId,
+                title: item.snippet.title,
+                publishDate: item.snippet.publishedAt,
+                channel: {
+                    id: item.snippet.channelId,
+                    name: item.snippet.channelTitle,
+                },
+                thumbnail: item.snippet.thumbnails.medium,
+            };
+
+            if (
+                CHANNEL_FILTER_LIST.some(
+                    (item) => item.channelId === result.channel.id
+                )
+            ) {
+                nonIndieResults.push(result);
+            } else {
+                if (resultPage.length < PAGE_LIMIT) {
+                    resultPage.push(result);
+                    videoIds.push(result.id);
+                } else pageOverflow.push(result);
+            }
+        });
+    }
+
+    handleResultsError(error, isInitialSearch) {
+        if (error instanceof HTTPException) {
+            if (error.status === 403)
+                alert(
+                    "indieTube has exceeded it's daily quota for the YouTube Data API. Check back tomorrow. :("
+                );
+            else alert("Something went wrong...");
+        } else alert(error);
+
+        if (isInitialSearch)
+            this.setState({
+                resultPages: [],
+                pageOverflow: [],
+                nonIndieCount: 0,
+                nextPageToken: "",
+                isSearch: true,
+            });
+        else
+            this.setState({
+                nextPageToken: "",
+                isSearch: false,
+            });
+
+        this.setIsLoading(false);
     }
 
     render() {
