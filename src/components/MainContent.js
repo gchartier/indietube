@@ -1,6 +1,14 @@
 import React, { Component } from "react";
 import axios from "axios";
 import styled from "styled-components";
+import moment from "moment";
+import { CHANNEL_FILTER_LIST } from "../services/channelFilter";
+import HTTPException from "../services/exceptions";
+import formatVideoDuration from "../services/helperFunctions.js";
+import Search from "./Search";
+import ResultList from "./ResultsList";
+import Loading from "./reusable/Loading";
+import NoResults from "./NoResults";
 import {
     API_SEARCH_URL,
     SEARCH_PARAMS,
@@ -9,13 +17,6 @@ import {
     PAGE_LIMIT,
     REQUEST_LOOP_LIMIT,
 } from "../services/constants.js";
-import { CHANNEL_FILTER_LIST } from "../services/channelFilter";
-import HTTPException from "../services/exceptions";
-import convertDurationToTimestamp from "../services/helperFunctions.js";
-import Search from "./Search";
-import ResultList from "./ResultsList";
-import Loading from "./reusable/Loading";
-import NoResults from "./NoResults";
 
 const StyledMainContent = styled.div`
     display: flex;
@@ -33,10 +34,9 @@ class MainContent extends Component {
 
         this.state = {
             searchQuery: "",
-            resultPages: [],
-            currentPage: 0,
+            indieResults: [],
+            resultsBuffer: [],
             nextPageToken: "",
-            pageOverflow: [],
             nonIndieCount: 0,
             isLoading: false,
             isSearch: true,
@@ -44,22 +44,21 @@ class MainContent extends Component {
 
         this.getSearchResults = this.getSearchResults.bind(this);
         this.getNextResultsPage = this.getNextResultsPage.bind(this);
-        this.handleSearchChange = this.handleSearchChange.bind(this);
+        this.handleSearchQueryChange = this.handleSearchQueryChange.bind(this);
         this.handleSearchSubmit = this.handleSearchSubmit.bind(this);
         this.setIsLoading = this.setIsLoading.bind(this);
         this.getSearchListResp = this.getSearchListResp.bind(this);
-        this.getVideoListResp = this.getVideoListResp.bind(this);
+        this.getVideoDetails = this.getVideoDetails.bind(this);
         this.filterResultsByChannel = this.filterResultsByChannel.bind(this);
         this.handleResultsError = this.handleResultsError.bind(this);
     }
 
     async getSearchResults() {
         const videoIds = [];
-        const resultPage = [];
-        const pageOverflow = [];
+        const indieResults = [];
+        const resultsBuffer = [];
         const nonIndieResults = [];
         let requestRound = 0;
-        let videoDetailsResponse = "";
         let nextPageToken = "";
 
         try {
@@ -68,7 +67,11 @@ class MainContent extends Component {
             // Retrieve search results until the page is full
             do {
                 requestRound++;
-                const searchListResp = this.getSearchListResp(nextPageToken);
+
+                const searchListResp = await this.getSearchListResp(
+                    nextPageToken
+                );
+
                 nextPageToken = searchListResp.data.nextPageToken;
 
                 if (
@@ -79,22 +82,21 @@ class MainContent extends Component {
 
                 this.filterResultsByChannel(
                     searchListResp.data.items,
-                    result,
                     nonIndieResults,
-                    resultPage,
+                    indieResults,
                     videoIds,
-                    pageOverflow
+                    resultsBuffer
                 );
             } while (
-                resultPage.length < PAGE_LIMIT &&
+                indieResults.length < PAGE_LIMIT &&
                 requestRound < REQUEST_LOOP_LIMIT
             );
 
-            this.getVideoListResp(resultPage);
+            await this.getVideoDetails(indieResults, videoIds);
 
             this.setState({
-                resultPages: resultPage,
-                pageOverflow: pageOverflow,
+                indieResults: indieResults,
+                resultsBuffer: resultsBuffer,
                 nonIndieCount: nonIndieResults.length,
                 nextPageToken: nextPageToken,
                 isSearch: true,
@@ -108,8 +110,8 @@ class MainContent extends Component {
 
     async getNextResultsPage() {
         const videoIds = [];
-        const resultPage = [];
-        const pageOverflow = this.state.pageOverflow;
+        const indieResults = [];
+        const resultsBuffer = this.state.resultsBuffer;
         const nonIndieResults = [];
         let requestRound = 0;
         let nextPageToken = this.state.nextPageToken;
@@ -118,36 +120,42 @@ class MainContent extends Component {
             this.setIsLoading(true);
 
             // Fill result page from overflow if any
-            while (pageOverflow.length > 0 && resultPage.length < PAGE_LIMIT) {
-                resultPage.push(pageOverflow.pop());
-                videoIds.push(resultPage[resultPage.length - 1].id);
+            while (
+                resultsBuffer.length > 0 &&
+                indieResults.length < PAGE_LIMIT
+            ) {
+                indieResults.push(resultsBuffer.pop());
+                videoIds.push(indieResults[indieResults.length - 1].id);
             }
 
             // Retrieve results until the result page is full
             while (
-                resultPage.length < PAGE_LIMIT &&
+                indieResults.length < PAGE_LIMIT &&
                 requestRound < REQUEST_LOOP_LIMIT
             ) {
                 requestRound++;
-                const searchListResp = this.getSearchListResp(nextPageToken);
+
+                const searchListResp = await this.getSearchListResp(
+                    nextPageToken
+                );
+
                 nextPageToken = searchListResp.data.nextPageToken;
 
                 this.filterResultsByChannel(
                     searchListResp.data.items,
-                    result,
                     nonIndieResults,
-                    resultPage,
+                    indieResults,
                     videoIds,
-                    pageOverflow
+                    resultsBuffer
                 );
             }
 
-            this.getVideoListResp(resultPage);
+            await this.getVideoDetails(indieResults, videoIds);
 
             this.setState((state) => {
                 return {
-                    resultPages: state.resultPages.concat(resultPage),
-                    pageOverflow: pageOverflow,
+                    indieResults: state.indieResults.concat(indieResults),
+                    resultsBuffer: resultsBuffer,
                     nonIndieCount: state.nonIndieCount + nonIndieResults.length,
                     nextPageToken: nextPageToken,
                     isSearch: false,
@@ -160,12 +168,21 @@ class MainContent extends Component {
         }
     }
 
-    handleSearchChange(event) {
+    handleSearchQueryChange(event) {
         this.setState({ searchQuery: event.target.value });
     }
 
     handleSearchSubmit(event) {
         event.preventDefault();
+
+        // Clear result list state
+        this.setState({
+            indieResults: [],
+            nextPageToken: "",
+            resultsBuffer: [],
+            nonIndieCount: 0,
+            isSearch: true,
+        });
         this.getSearchResults();
     }
 
@@ -187,35 +204,40 @@ class MainContent extends Component {
                 throw new HTTPException(error);
             });
 
-        return { status: response.status, data: await searchResponse.data };
+        return {
+            status: searchResponse.status,
+            data: await searchResponse.data,
+        };
     }
 
-    async getVideoListResp(resultPage) {
+    async getVideoDetails(indieResults, videoIds) {
         const videosEndpoint = API_VIDEOS_URL + VIDEOS_PARAMS;
+
         const videoDetailsResponse = await axios
             .get(videosEndpoint + videoIds.join("%2C"))
             .catch((error) => {
                 throw new HTTPException(error);
             });
+
         videoDetailsResponse.data.items.forEach((item, i) => {
-            resultPage[i] = {
-                ...resultPage[i],
-                duration: convertDurationToTimestamp(
-                    item.contentDetails.duration
-                ),
+            console.log(item.contentDetails.duration);
+            indieResults[i] = {
+                ...indieResults[i],
+                duration: formatVideoDuration(item.contentDetails.duration),
                 views: item.statistics.viewCount,
                 likes: item.statistics.likeCount,
                 dislikes: item.statistics.dislikeCount,
             };
+            console.log(indieResults[i].duration);
         });
     }
 
     filterResultsByChannel(
         results,
         nonIndieResults,
-        resultPage,
+        indieResults,
         videoIds,
-        pageOverflow
+        resultsBuffer
     ) {
         results.forEach((item) => {
             const result = {
@@ -229,18 +251,23 @@ class MainContent extends Component {
                 thumbnail: item.snippet.thumbnails.medium,
             };
 
+            // Filter results by channel
             if (
-                CHANNEL_FILTER_LIST.some(
-                    (item) => item.channelId === result.channel.id
-                )
-            ) {
-                nonIndieResults.push(result);
-            } else {
-                if (resultPage.length < PAGE_LIMIT) {
-                    resultPage.push(result);
-                    videoIds.push(result.id);
-                } else pageOverflow.push(result);
-            }
+                indieResults.findIndex((item) => result.id === item.id) < 0 &&
+                resultsBuffer.findIndex((item) => result.id === item.id) < 0
+            )
+                if (
+                    CHANNEL_FILTER_LIST.some(
+                        (item) => item.channelId === result.channel.id
+                    )
+                ) {
+                    nonIndieResults.push(result);
+                } else {
+                    if (indieResults.length < PAGE_LIMIT) {
+                        indieResults.push(result);
+                        videoIds.push(result.id);
+                    } else resultsBuffer.push(result);
+                }
         });
     }
 
@@ -255,8 +282,8 @@ class MainContent extends Component {
 
         if (isInitialSearch)
             this.setState({
-                resultPages: [],
-                pageOverflow: [],
+                indieResults: [],
+                resultsBuffer: [],
                 nonIndieCount: 0,
                 nextPageToken: "",
                 isSearch: true,
@@ -271,20 +298,19 @@ class MainContent extends Component {
     }
 
     render() {
-        console.log(this.state.resultPages.length);
         return (
             <StyledMainContent>
                 {this.state.isLoading && <Loading />}
                 <Search
                     searchQuery={this.state.searchQuery}
-                    onSearchChange={this.handleSearchChange}
+                    onSearchChange={this.handleSearchQueryChange}
                     onSearchSubmit={this.handleSearchSubmit}
                     nonIndieCount={this.state.nonIndieCount}
                 />
 
-                {this.state.resultPages.length > 0 ? (
+                {this.state.indieResults.length > 0 ? (
                     <ResultList
-                        results={this.state.resultPages}
+                        results={this.state.indieResults}
                         scrollHandler={this.getNextResultsPage}
                         isSearch={this.state.isSearch}
                     />
