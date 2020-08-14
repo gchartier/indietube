@@ -1,7 +1,6 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import styled from "styled-components";
-import moment from "moment";
 import { CHANNEL_FILTER_LIST } from "../services/channelFilter";
 import HTTPException from "../services/exceptions";
 import formatVideoDuration from "../services/helperFunctions.js";
@@ -28,32 +27,18 @@ const StyledMainContent = styled.div`
     width: 100%;
 `;
 
-class MainContent extends Component {
-    constructor(props) {
-        super(props);
+function MainContent() {
+    const [resultsState, setResultsState] = useState({
+        indieResults: [],
+        resultsBuffer: [],
+        nonIndieCount: 0,
+        nextPageToken: "",
+        isSearch: true,
+    });
+    const [searchQuery, setSearchQuery] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
-        this.state = {
-            searchQuery: "",
-            indieResults: [],
-            resultsBuffer: [],
-            nextPageToken: "",
-            nonIndieCount: 0,
-            isLoading: false,
-            isSearch: true,
-        };
-
-        this.getSearchResults = this.getSearchResults.bind(this);
-        this.getNextResultsPage = this.getNextResultsPage.bind(this);
-        this.handleSearchQueryChange = this.handleSearchQueryChange.bind(this);
-        this.handleSearchSubmit = this.handleSearchSubmit.bind(this);
-        this.setIsLoading = this.setIsLoading.bind(this);
-        this.getSearchListResp = this.getSearchListResp.bind(this);
-        this.getVideoDetails = this.getVideoDetails.bind(this);
-        this.filterResultsByChannel = this.filterResultsByChannel.bind(this);
-        this.handleResultsError = this.handleResultsError.bind(this);
-    }
-
-    async getSearchResults() {
+    async function getSearchResults() {
         const videoIds = [];
         const indieResults = [];
         const resultsBuffer = [];
@@ -62,15 +47,13 @@ class MainContent extends Component {
         let nextPageToken = "";
 
         try {
-            this.setIsLoading(true);
+            setIsLoading(true);
 
             // Retrieve search results until the page is full
             do {
                 requestRound++;
 
-                const searchListResp = await this.getSearchListResp(
-                    nextPageToken
-                );
+                const searchListResp = await getSearchListResp(nextPageToken);
 
                 nextPageToken = searchListResp.data.nextPageToken;
 
@@ -80,7 +63,7 @@ class MainContent extends Component {
                 )
                     throw Error("No results found for your search...");
 
-                this.filterResultsByChannel(
+                filterResultsByChannel(
                     searchListResp.data.items,
                     nonIndieResults,
                     indieResults,
@@ -92,9 +75,9 @@ class MainContent extends Component {
                 requestRound < REQUEST_LOOP_LIMIT
             );
 
-            await this.getVideoDetails(indieResults, videoIds);
+            await getVideoDetails(indieResults, videoIds);
 
-            this.setState({
+            setResultsState({
                 indieResults: indieResults,
                 resultsBuffer: resultsBuffer,
                 nonIndieCount: nonIndieResults.length,
@@ -102,22 +85,22 @@ class MainContent extends Component {
                 isSearch: true,
             });
 
-            this.setIsLoading(false);
+            setIsLoading(false);
         } catch (error) {
-            this.handleResultsError(error, true);
+            handleResultsError(error);
         }
     }
 
-    async getNextResultsPage() {
+    async function getNextResultsPage() {
         const videoIds = [];
         const indieResults = [];
-        const resultsBuffer = this.state.resultsBuffer;
+        const resultsBuffer = resultsState.resultsBuffer;
         const nonIndieResults = [];
         let requestRound = 0;
-        let nextPageToken = this.state.nextPageToken;
+        let nextPageToken = resultsState.nextPageToken;
 
         try {
-            this.setIsLoading(true);
+            setIsLoading(true);
 
             // Fill result page from overflow if any
             while (
@@ -135,13 +118,11 @@ class MainContent extends Component {
             ) {
                 requestRound++;
 
-                const searchListResp = await this.getSearchListResp(
-                    nextPageToken
-                );
+                const searchListResp = await getSearchListResp(nextPageToken);
 
                 nextPageToken = searchListResp.data.nextPageToken;
 
-                this.filterResultsByChannel(
+                filterResultsByChannel(
                     searchListResp.data.items,
                     nonIndieResults,
                     indieResults,
@@ -150,89 +131,43 @@ class MainContent extends Component {
                 );
             }
 
-            await this.getVideoDetails(indieResults, videoIds);
+            await getVideoDetails(indieResults, videoIds);
 
-            this.setState((state) => {
-                return {
-                    indieResults: state.indieResults.concat(indieResults),
-                    resultsBuffer: resultsBuffer,
-                    nonIndieCount: state.nonIndieCount + nonIndieResults.length,
-                    nextPageToken: nextPageToken,
-                    isSearch: false,
-                };
+            setResultsState({
+                indieResults: resultsState.indieResults.concat(indieResults),
+                resultsBuffer: resultsBuffer,
+                nonIndieCount:
+                    resultsState.nonIndieCount + nonIndieResults.length,
+                nextPageToken: nextPageToken,
+                isSearch: false,
             });
 
-            this.setIsLoading(false);
+            setIsLoading(false);
         } catch (error) {
-            this.handleResultsError(error, false);
+            handleResultsError(error);
         }
     }
 
-    handleSearchQueryChange(event) {
-        this.setState({ searchQuery: event.target.value });
+    function handleSearchQueryChange(event) {
+        setSearchQuery(event.target.value);
     }
 
-    handleSearchSubmit(event) {
+    function handleSearchSubmit(event) {
         event.preventDefault();
 
-        // Clear result list state
-        this.setState({
+        // Clear results state
+        setResultsState({
             indieResults: [],
-            nextPageToken: "",
             resultsBuffer: [],
             nonIndieCount: 0,
+            nextPageToken: "",
             isSearch: true,
         });
-        this.getSearchResults();
+
+        getSearchResults();
     }
 
-    setIsLoading(isLoading) {
-        this.setState({ isLoading: isLoading });
-    }
-
-    async getSearchListResp(nextPageToken) {
-        let searchEndpoint =
-            API_SEARCH_URL + "&q=" + this.state.searchQuery + SEARCH_PARAMS;
-
-        const searchResponse = await axios
-            .get(
-                nextPageToken !== ""
-                    ? searchEndpoint + "&pageToken=" + nextPageToken
-                    : searchEndpoint
-            )
-            .catch((error) => {
-                throw new HTTPException(error);
-            });
-
-        return {
-            status: searchResponse.status,
-            data: await searchResponse.data,
-        };
-    }
-
-    async getVideoDetails(indieResults, videoIds) {
-        const videosEndpoint = API_VIDEOS_URL + VIDEOS_PARAMS;
-
-        const videoDetailsResponse = await axios
-            .get(videosEndpoint + videoIds.join("%2C"))
-            .catch((error) => {
-                throw new HTTPException(error);
-            });
-
-        videoDetailsResponse.data.items.forEach((item, i) => {
-            console.log(item.contentDetails.duration);
-            indieResults[i] = {
-                ...indieResults[i],
-                duration: formatVideoDuration(item.contentDetails.duration),
-                views: item.statistics.viewCount,
-                likes: item.statistics.likeCount,
-                dislikes: item.statistics.dislikeCount,
-            };
-            console.log(indieResults[i].duration);
-        });
-    }
-
-    filterResultsByChannel(
+    function filterResultsByChannel(
         results,
         nonIndieResults,
         indieResults,
@@ -271,7 +206,7 @@ class MainContent extends Component {
         });
     }
 
-    handleResultsError(error, isInitialSearch) {
+    function handleResultsError(error) {
         if (error instanceof HTTPException) {
             if (error.status === 403)
                 alert(
@@ -280,8 +215,8 @@ class MainContent extends Component {
             else alert("Something went wrong...");
         } else alert(error);
 
-        if (isInitialSearch)
-            this.setState({
+        if (resultsState.isSearch)
+            setResultsState({
                 indieResults: [],
                 resultsBuffer: [],
                 nonIndieCount: 0,
@@ -289,37 +224,78 @@ class MainContent extends Component {
                 isSearch: true,
             });
         else
-            this.setState({
+            setResultsState({
+                indieResults: resultsState.indieResults,
+                resultsBuffer: resultsState.resultsBuffer,
+                nonIndieCount: resultsState.nonIndieCount,
                 nextPageToken: "",
                 isSearch: false,
             });
 
-        this.setIsLoading(false);
+        setIsLoading(false);
     }
 
-    render() {
-        return (
-            <StyledMainContent>
-                {this.state.isLoading && <Loading />}
-                <Search
-                    searchQuery={this.state.searchQuery}
-                    onSearchChange={this.handleSearchQueryChange}
-                    onSearchSubmit={this.handleSearchSubmit}
-                    nonIndieCount={this.state.nonIndieCount}
+    async function getSearchListResp(nextPageToken) {
+        let searchEndpoint =
+            API_SEARCH_URL + "&q=" + searchQuery + SEARCH_PARAMS;
+
+        const searchResponse = await axios
+            .get(
+                nextPageToken !== ""
+                    ? searchEndpoint + "&pageToken=" + nextPageToken
+                    : searchEndpoint
+            )
+            .catch((error) => {
+                throw new HTTPException(error);
+            });
+
+        return {
+            status: searchResponse.status,
+            data: await searchResponse.data,
+        };
+    }
+
+    async function getVideoDetails(indieResults, videoIds) {
+        const videosEndpoint = API_VIDEOS_URL + VIDEOS_PARAMS;
+
+        const videoDetailsResponse = await axios
+            .get(videosEndpoint + videoIds.join("%2C"))
+            .catch((error) => {
+                throw new HTTPException(error);
+            });
+
+        videoDetailsResponse.data.items.forEach((item, i) => {
+            indieResults[i] = {
+                ...indieResults[i],
+                duration: formatVideoDuration(item.contentDetails.duration),
+                views: item.statistics.viewCount,
+                likes: item.statistics.likeCount,
+                dislikes: item.statistics.dislikeCount,
+            };
+        });
+    }
+
+    return (
+        <StyledMainContent>
+            {isLoading && <Loading />}
+            <Search
+                searchQuery={searchQuery}
+                onSearchChange={handleSearchQueryChange}
+                onSearchSubmit={handleSearchSubmit}
+                nonIndieCount={resultsState.nonIndieCount}
+            />
+
+            {resultsState.indieResults.length > 0 ? (
+                <ResultList
+                    results={resultsState.indieResults}
+                    scrollHandler={getNextResultsPage}
+                    isSearch={resultsState.isSearch}
                 />
-
-                {this.state.indieResults.length > 0 ? (
-                    <ResultList
-                        results={this.state.indieResults}
-                        scrollHandler={this.getNextResultsPage}
-                        isSearch={this.state.isSearch}
-                    />
-                ) : (
-                    <NoResults />
-                )}
-            </StyledMainContent>
-        );
-    }
+            ) : (
+                <NoResults />
+            )}
+        </StyledMainContent>
+    );
 }
 
 export default MainContent;

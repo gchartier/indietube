@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import About from "./About";
 
@@ -41,39 +41,26 @@ const NavItem = styled.li`
     font-size: 1.3rem;
 `;
 
-class Header extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            aboutModalIsOpen: false,
-        };
-    }
+function Header() {
+    const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
 
-    openAboutModal = () => {
-        this.setState({ aboutModalIsOpen: true });
-    };
-
-    closeAboutModal = () => {
-        this.setState({ aboutModalIsOpen: false });
-    };
-
-    render() {
-        return (
-            <StyledHeader>
-                <H1>
-                    indie<PrimarySpan>Tube</PrimarySpan>
-                </H1>
-                <Nav>
-                    <NavList>
-                        <NavItem onClick={this.openAboutModal}>About</NavItem>
-                    </NavList>
-                </Nav>
-                {this.state.aboutModalIsOpen && (
-                    <About closeHandler={this.closeAboutModal} />
-                )}
-            </StyledHeader>
-        );
-    }
+    return (
+        <StyledHeader>
+            <H1>
+                indie<PrimarySpan>Tube</PrimarySpan>
+            </H1>
+            <Nav>
+                <NavList>
+                    <NavItem onClick={() => setIsAboutModalOpen(true)}>
+                        About
+                    </NavItem>
+                </NavList>
+            </Nav>
+            {isAboutModalOpen && (
+                <About closeHandler={() => setIsAboutModalOpen(false)} />
+            )}
+        </StyledHeader>
+    );
 }
 
 export default Header;
