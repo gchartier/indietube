@@ -1,60 +1,9 @@
 import React, { useState, useEffect } from "react";
-import styled from "styled-components";
-import optionsMenu from "../../assets/menu.svg";
 import { encode } from "querystring";
+import * as ui from "./styles";
+import optionsMenu from "../../../assets/menu.svg";
 
-const ResultOptions = styled.div`
-    position: relative;
-    align-self: flex-end;
-`;
-
-const MenuIcon = styled.img`
-    padding: 0;
-    width: 0.4rem;
-`;
-
-const Menu = styled.ul`
-    position: absolute;
-    bottom: 100%;
-    right: 0;
-    white-space: nowrap;
-    padding: 10px 0 10px 0;
-    margin: 0;
-    z-index: 2;
-    border: 1px solid rgba(0, 0, 0, 0.04);
-    box-shadow: 0 16px 24px 2px rgba(0, 0, 0, 0.14);
-    background-color: #f7f7f7;
-`;
-
-const MenuItem = styled.li`
-    list-style-type: none;
-    padding: 8px;
-
-    &:hover {
-        background-color: #ededed;
-    }
-
-    & a {
-        display: block;
-        width: 100%;
-    }
-`;
-
-const ResultLink = styled.a`
-    color: ${(props) => props.linkColor || "black"};
-    text-decoration: ${(props) => props.textDecor || "underline"};
-`;
-
-const MenuButton = styled.button`
-    border: none;
-    background-color: inherit;
-    font-size: inherit;
-    width: 100%;
-    text-align: left;
-    padding: 0;
-`;
-
-function OptionsMenu(props) {
+export default function OptionsMenu(props) {
     const [isMenuVisible, setIsMenuVisible] = useState(false);
     const menuContainer = React.createRef();
 
@@ -97,32 +46,32 @@ function OptionsMenu(props) {
     };
 
     return (
-        <ResultOptions>
-            <MenuIcon
+        <ui.ResultOptions>
+            <ui.MenuIcon
                 src={optionsMenu}
                 alt="Result Options"
                 onClick={handleMenuClick}
             />
             {isMenuVisible && (
-                <Menu ref={menuContainer}>
-                    <MenuItem onClick={handleMenuClick}>
-                        <ResultLink
+                <ui.Menu ref={menuContainer}>
+                    <ui.MenuItem onClick={handleMenuClick}>
+                        <ui.ResultLink
                             href={props.videoURL}
                             target="_blank"
                             textDecor="none"
                         >
                             Open with YouTube.com
-                        </ResultLink>
-                    </MenuItem>
-                    <MenuItem onClick={handleMenuClick}>
-                        <ResultLink
+                        </ui.ResultLink>
+                    </ui.MenuItem>
+                    <ui.MenuItem onClick={handleMenuClick}>
+                        <ui.ResultLink
                             href={props.channelURL}
                             target="_blank"
                             textDecor="none"
                         >
                             Go to Channel
-                        </ResultLink>
-                    </MenuItem>
+                        </ui.ResultLink>
+                    </ui.MenuItem>
                     <form onSubmit={handleSubmit}>
                         <input
                             name="channelId"
@@ -134,16 +83,14 @@ function OptionsMenu(props) {
                             type="hidden"
                             value={props.channel.name}
                         />
-                        <MenuItem>
-                            <MenuButton type="submit">
+                        <ui.MenuItem>
+                            <ui.MenuButton type="submit">
                                 This isn't indie
-                            </MenuButton>
-                        </MenuItem>
+                            </ui.MenuButton>
+                        </ui.MenuItem>
                     </form>
-                </Menu>
+                </ui.Menu>
             )}
-        </ResultOptions>
+        </ui.ResultOptions>
     );
 }
-
-export default OptionsMenu;
