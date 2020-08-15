@@ -1,17 +1,15 @@
 import React from "react";
-import Modal from "./reusable/Modal";
+import * as ui from "./styles";
+import Modal from "../reusable/modal/Modal";
 
-const subheading = { fontSize: "1.5rem" };
-const subheadingCenter = { ...subheading, textAlign: "center" };
-
-function About(props) {
+export default function About(props) {
     return (
         <Modal
             closeHandler={props.closeHandler}
             modalHeader={"About"}
             modalContent={
-                <div>
-                    <h2 style={subheading}>What is indieTube?</h2>
+                <React.Fragment>
+                    <ui.SubHeading>What is indieTube?</ui.SubHeading>
                     <p>
                         <b>IndieTube</b>, in its most basic form, is a filter on
                         YouTube's search algorithm to only show you the
@@ -32,7 +30,7 @@ function About(props) {
                         to fight <b>for</b> the creators that made this platform
                         successful in the first place.
                     </p>
-                    <h2 style={subheading}>What classifies as "indie"?</h2>
+                    <ui.SubHeading>What classifies as "indie"?</ui.SubHeading>
                     <p>
                         There's really only 1 golden rule that's considered
                         before filtering out a channel's results from the final
@@ -44,7 +42,7 @@ function About(props) {
                         come in!
                     </p>
 
-                    <h2 style={subheading}>What can I do to help?</h2>
+                    <ui.SubHeading>What can I do to help?</ui.SubHeading>
                     <p>
                         If you use indieTube, help us make it better! If you
                         notice any results that do not represent our 1 golden
@@ -53,12 +51,12 @@ function About(props) {
                         submitted for review to be removed from the indieTube
                         results.
                     </p>
-                    <h2 style={subheadingCenter}>For the creators!</h2>
+                    <ui.SubHeading isCenter={true}>
+                        For the creators!
+                    </ui.SubHeading>
                     <br />
-                </div>
+                </React.Fragment>
             }
         />
     );
 }
-
-export default About;

@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import axios from "axios";
-import styled from "styled-components";
-import { CHANNEL_FILTER_LIST } from "../services/channelFilter";
-import HTTPException from "../services/exceptions";
-import formatVideoDuration from "../services/helperFunctions.js";
-import Search from "./Search";
-import ResultList from "./ResultsList";
-import Loading from "./reusable/Loading";
-import NoResults from "./NoResults";
+import * as ui from "./styles";
+import { CHANNEL_FILTER_LIST } from "../../utilities/channelFilter";
+import HTTPException from "../../utilities/exceptions";
+import formatVideoDuration from "../../utilities/formatVideoDuration";
+import Search from "../search/Search";
+import ResultList from "../results-list/ResultsList";
+import Loading from "../reusable/loading/Loading";
+import NoResults from "../no-results/NoResults";
 import {
     API_SEARCH_URL,
     SEARCH_PARAMS,
@@ -15,19 +15,9 @@ import {
     VIDEOS_PARAMS,
     PAGE_LIMIT,
     REQUEST_LOOP_LIMIT,
-} from "../services/constants.js";
+} from "../../utilities/constants";
 
-const StyledMainContent = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    flex-grow: 1;
-    background-color: whitesmoke;
-    min-height: 0;
-    width: 100%;
-`;
-
-function MainContent() {
+export default function MainContent() {
     const [resultsState, setResultsState] = useState({
         indieResults: [],
         resultsBuffer: [],
@@ -276,7 +266,7 @@ function MainContent() {
     }
 
     return (
-        <StyledMainContent>
+        <ui.StyledMainContent>
             {isLoading && <Loading />}
             <Search
                 searchQuery={searchQuery}
@@ -294,8 +284,6 @@ function MainContent() {
             ) : (
                 <NoResults />
             )}
-        </StyledMainContent>
+        </ui.StyledMainContent>
     );
 }
-
-export default MainContent;

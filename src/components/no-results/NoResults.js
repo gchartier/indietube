@@ -1,11 +1,9 @@
 import React from "react";
 
-function NoResults() {
+export default function NoResults() {
     return (
         <React.Fragment>
             <p>No results...</p>
         </React.Fragment>
     );
 }
-
-export default NoResults;

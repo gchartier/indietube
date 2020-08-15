@@ -1,65 +1,40 @@
 import React from "react";
-import styled from "styled-components";
+import * as ui from "./styles";
 
-const StyledFooter = styled.footer`
-    text-align: center;
-    font-size: 1.2rem;
-    background-color: white;
-    padding: 2%;
-`;
-
-const P = styled.p`
-    font-weight: bold;
-    font-size: calc(12px + (18 - 12) * ((100vw - 300px) / (1600 - 300)));
-    margin: 0;
-`;
-
-const FlexContainer = styled.span`
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-`;
-
-const SiteLink = styled.a`
-    color: ${(props) => props.color || "black"};
-`;
-
-function Footer() {
+export default function Footer() {
     return (
-        <StyledFooter>
-            <P>
-                <FlexContainer>
+        <ui.StyledFooter>
+            <ui.P>
+                <ui.FlexContainer>
                     <span>
                         Built by{" "}
-                        <SiteLink
+                        <ui.SiteLink
                             color="#0F9D58"
                             href="https://gabrielchartier.dev"
                             target="_blank"
                         >
                             GabrielChartier.dev
-                        </SiteLink>
+                        </ui.SiteLink>
                     </span>
                     <span>
                         &nbsp;using the{" "}
-                        <SiteLink
+                        <ui.SiteLink
                             color="#DB4437"
                             href="https://developers.google.com/youtube/v3/"
                             target="_blank"
                         >
                             YouTube Data API
-                        </SiteLink>
+                        </ui.SiteLink>
                     </span>
-                </FlexContainer>
-                <SiteLink
+                </ui.FlexContainer>
+                <ui.SiteLink
                     color="#4285F4"
                     target="_blank"
                     href="https://www.buymeacoffee.com/gabrielchartier"
                 >
                     Buy me a coffee?
-                </SiteLink>
-            </P>
-        </StyledFooter>
+                </ui.SiteLink>
+            </ui.P>
+        </ui.StyledFooter>
     );
 }
-
-export default Footer;

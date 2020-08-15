@@ -1,9 +1,6 @@
-import React from "react";
-import ReactDOM from "react-dom";
 import styled from "styled-components";
-import closeIcon from "../../assets/close.svg";
 
-const ModalContainer = styled.div`
+export const ModalContainer = styled.div`
     position: absolute;
     top: 0;
     bottom: 0;
@@ -16,7 +13,7 @@ const ModalContainer = styled.div`
     align-items: center;
 `;
 
-const Overlay = styled.div`
+export const Overlay = styled.div`
     position: fixed;
     top: 0;
     bottom: 0;
@@ -30,7 +27,7 @@ const Overlay = styled.div`
     transition: opacity 200ms;
 `;
 
-const ModalBody = styled.div`
+export const ModalBody = styled.div`
     position: absolute;
     overflow: scroll;
     top: 10%;
@@ -45,7 +42,7 @@ const ModalBody = styled.div`
     padding: 2rem;
 `;
 
-const CloseIcon = styled.img`
+export const CloseIcon = styled.img`
     position: absolute;
     width: 2rem;
     right: 2%;
@@ -53,23 +50,7 @@ const CloseIcon = styled.img`
     cursor: pointer;
 `;
 
-const ModalHeader = styled.h1`
+export const ModalHeader = styled.h1`
     text-align: center;
     font-size: 2rem;
 `;
-
-function Modal(props) {
-    return ReactDOM.createPortal(
-        <ModalContainer>
-            <ModalBody>
-                <CloseIcon src={closeIcon} onClick={props.closeHandler} />
-                <ModalHeader>{props.modalHeader}</ModalHeader>
-                {props.modalContent}
-            </ModalBody>
-            <Overlay onClick={props.closeHandler} />
-        </ModalContainer>,
-        document.querySelector("#modal")
-    );
-}
-
-export default Modal;
