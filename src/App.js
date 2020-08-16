@@ -1,17 +1,33 @@
-import React from "react";
-import "./App.css";
+import React, { useState } from "react";
 import Header from "./components/header/Header";
 import Footer from "./components/footer/Footer";
 import MainContent from "./components/main-content/MainContent";
+import { GlobalStyles, StyledApp } from "./globalStyles";
 
-function App() {
+export default function App() {
+    const [searchQuery, setSearchQuery] = useState("");
+    const [submitSearch, setSubmitSearch] = useState(false);
+    const [nonIndieCount, setNonIndieCount] = useState(0);
+
     return (
-        <div className="App">
-            <Header />
-            <MainContent />
+        <StyledApp>
+            <Header
+                searchQuery={searchQuery}
+                handleSearchQueryChange={setSearchQuery}
+                handleSearchQuerySubmit={() => {
+                    setSubmitSearch(true);
+                }}
+                nonIndieCount={nonIndieCount}
+            />
+            <MainContent
+                setNonIndieCount={setNonIndieCount}
+                nonIndieCount={nonIndieCount}
+                submitSearch={submitSearch}
+                setSubmitSearch={setSubmitSearch}
+                searchQuery={searchQuery}
+            />
             <Footer />
-        </div>
+            <GlobalStyles />
+        </StyledApp>
     );
 }
-
-export default App;

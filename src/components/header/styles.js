@@ -2,10 +2,15 @@ import styled from "styled-components";
 
 export const StyledHeader = styled.header`
     display: flex;
+    position: relative;
     text-align: left;
     justify-content: space-between;
     padding: 2%;
-    box-shadow: 0px 5px 11px -4px #899380;
+    box-shadow: 0px 5px 10px -10px rgba(0, 0, 0, 0.5);
+
+    @media (max-width: 500px) {
+        flex-wrap: wrap;
+    }
 `;
 
 export const H1 = styled.h1`
