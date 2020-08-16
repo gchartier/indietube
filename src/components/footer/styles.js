@@ -5,11 +5,12 @@ export const StyledFooter = styled.footer`
     font-size: 1.2rem;
     background-color: white;
     padding: 2%;
+    box-shadow: 0px -5px 10px -10px rgba(0, 0, 0, 0.5);
 `;
 
 export const P = styled.p`
     font-weight: bold;
-    font-size: calc(12px + (18 - 12) * ((100vw - 300px) / (1600 - 300)));
+    font-size: calc(15px + (18 - 15) * ((100vw - 300px) / (1600 - 300)));
     margin: 0;
 `;
 

@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import * as ui from "./styles";
 import { CHANNEL_FILTER_LIST } from "../../utilities/channelFilter";
 import HTTPException from "../../utilities/exceptions";
 import formatVideoDuration from "../../utilities/formatVideoDuration";
-import Search from "../search/Search";
 import ResultList from "../results-list/ResultsList";
 import Loading from "../reusable/loading/Loading";
 import NoResults from "../no-results/NoResults";
@@ -17,18 +16,78 @@ import {
     REQUEST_LOOP_LIMIT,
 } from "../../utilities/constants";
 
-export default function MainContent() {
+export default function MainContent(props) {
+    const [isLoading, setIsLoading] = useState(false);
     const [resultsState, setResultsState] = useState({
         indieResults: [],
         resultsBuffer: [],
-        nonIndieCount: 0,
         nextPageToken: "",
         isSearch: true,
     });
-    const [searchQuery, setSearchQuery] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
 
-    async function getSearchResults() {
+    const getSearchListResp = useCallback(
+        async (nextPageToken) => {
+            let searchEndpoint =
+                API_SEARCH_URL + "&q=" + props.searchQuery + SEARCH_PARAMS;
+
+            const searchResponse = await axios
+                .get(
+                    nextPageToken !== ""
+                        ? searchEndpoint + "&pageToken=" + nextPageToken
+                        : searchEndpoint
+                )
+                .catch((error) => {
+                    throw new HTTPException(error);
+                });
+
+            return {
+                status: searchResponse.status,
+                data: await searchResponse.data,
+            };
+        },
+        [props.searchQuery]
+    );
+
+    const handleResultsError = useCallback(
+        (error) => {
+            if (error instanceof HTTPException) {
+                if (error.status === 403)
+                    alert(
+                        "indieTube has exceeded it's daily quota for the YouTube Data API. Check back tomorrow. :("
+                    );
+                else alert("Something went wrong...");
+            } else alert(error);
+
+            if (resultsState.isSearch) {
+                setResultsState({
+                    indieResults: [],
+                    resultsBuffer: [],
+                    nonIndieCount: 0,
+                    nextPageToken: "",
+                    isSearch: true,
+                });
+                props.setNonIndieCount(0);
+            } else {
+                setResultsState({
+                    indieResults: resultsState.indieResults,
+                    resultsBuffer: resultsState.resultsBuffer,
+                    nextPageToken: "",
+                    isSearch: false,
+                });
+            }
+
+            setIsLoading(false);
+        },
+        [
+            props,
+            resultsState.indieResults,
+            resultsState.isSearch,
+            resultsState.resultsBuffer,
+        ]
+    );
+
+    const getSearchResults = useCallback(async () => {
+        console.log("SEARCHING...");
         const videoIds = [];
         const indieResults = [];
         const resultsBuffer = [];
@@ -70,16 +129,31 @@ export default function MainContent() {
             setResultsState({
                 indieResults: indieResults,
                 resultsBuffer: resultsBuffer,
-                nonIndieCount: nonIndieResults.length,
                 nextPageToken: nextPageToken,
                 isSearch: true,
             });
+            props.setNonIndieCount(nonIndieResults.length);
 
             setIsLoading(false);
         } catch (error) {
             handleResultsError(error);
         }
-    }
+    }, [getSearchListResp, handleResultsError, props]);
+
+    useEffect(() => {
+        if (props.submitSearch === true) {
+            // Clear results state
+            setResultsState({
+                indieResults: [],
+                resultsBuffer: [],
+                nextPageToken: "",
+                isSearch: true,
+            });
+
+            getSearchResults();
+            props.setSubmitSearch(false);
+        }
+    }, [props, getSearchResults]);
 
     async function getNextResultsPage() {
         const videoIds = [];
@@ -126,35 +200,17 @@ export default function MainContent() {
             setResultsState({
                 indieResults: resultsState.indieResults.concat(indieResults),
                 resultsBuffer: resultsBuffer,
-                nonIndieCount:
-                    resultsState.nonIndieCount + nonIndieResults.length,
                 nextPageToken: nextPageToken,
                 isSearch: false,
             });
+            props.setNonIndieCount(
+                props.nonIndieCount + nonIndieResults.length
+            );
 
             setIsLoading(false);
         } catch (error) {
             handleResultsError(error);
         }
-    }
-
-    function handleSearchQueryChange(event) {
-        setSearchQuery(event.target.value);
-    }
-
-    function handleSearchSubmit(event) {
-        event.preventDefault();
-
-        // Clear results state
-        setResultsState({
-            indieResults: [],
-            resultsBuffer: [],
-            nonIndieCount: 0,
-            nextPageToken: "",
-            isSearch: true,
-        });
-
-        getSearchResults();
     }
 
     function filterResultsByChannel(
@@ -196,55 +252,6 @@ export default function MainContent() {
         });
     }
 
-    function handleResultsError(error) {
-        if (error instanceof HTTPException) {
-            if (error.status === 403)
-                alert(
-                    "indieTube has exceeded it's daily quota for the YouTube Data API. Check back tomorrow. :("
-                );
-            else alert("Something went wrong...");
-        } else alert(error);
-
-        if (resultsState.isSearch)
-            setResultsState({
-                indieResults: [],
-                resultsBuffer: [],
-                nonIndieCount: 0,
-                nextPageToken: "",
-                isSearch: true,
-            });
-        else
-            setResultsState({
-                indieResults: resultsState.indieResults,
-                resultsBuffer: resultsState.resultsBuffer,
-                nonIndieCount: resultsState.nonIndieCount,
-                nextPageToken: "",
-                isSearch: false,
-            });
-
-        setIsLoading(false);
-    }
-
-    async function getSearchListResp(nextPageToken) {
-        let searchEndpoint =
-            API_SEARCH_URL + "&q=" + searchQuery + SEARCH_PARAMS;
-
-        const searchResponse = await axios
-            .get(
-                nextPageToken !== ""
-                    ? searchEndpoint + "&pageToken=" + nextPageToken
-                    : searchEndpoint
-            )
-            .catch((error) => {
-                throw new HTTPException(error);
-            });
-
-        return {
-            status: searchResponse.status,
-            data: await searchResponse.data,
-        };
-    }
-
     async function getVideoDetails(indieResults, videoIds) {
         const videosEndpoint = API_VIDEOS_URL + VIDEOS_PARAMS;
 
@@ -268,12 +275,6 @@ export default function MainContent() {
     return (
         <ui.StyledMainContent>
             {isLoading && <Loading />}
-            <Search
-                searchQuery={searchQuery}
-                onSearchChange={handleSearchQueryChange}
-                onSearchSubmit={handleSearchSubmit}
-                nonIndieCount={resultsState.nonIndieCount}
-            />
 
             {resultsState.indieResults.length > 0 ? (
                 <ResultList

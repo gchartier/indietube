@@ -4,7 +4,12 @@ import * as ui from "./styles";
 export default function Search(props) {
     return (
         <ui.SearchContainer>
-            <ui.InputContainer onSubmit={props.onSearchSubmit}>
+            <ui.InputContainer
+                onSubmit={(event) => {
+                    event.preventDefault();
+                    props.onSearchSubmit(event);
+                }}
+            >
                 <ui.SearchInput
                     value={props.searchQuery}
                     onChange={props.onSearchChange}
