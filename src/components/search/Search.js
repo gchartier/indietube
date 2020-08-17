@@ -15,13 +15,11 @@ export default function Search(props) {
                         value={props.searchQuery}
                         onChange={props.onSearchChange}
                     />
-                    {
-                        //props.nonIndieCount > 0 && (
+                    {props.nonIndieCount > 0 && (
                         <ui.ResultsFiltered>
-                            {props.nonIndieCount} videos filtered out
+                            {props.nonIndieCount} results filtered out
                         </ui.ResultsFiltered>
-                        /*)*/
-                    }
+                    )}
                 </ui.InputFields>
                 <ui.SearchIcon type="submit" alt="Submit Search" />
             </ui.InputContainer>
