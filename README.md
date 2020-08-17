@@ -4,7 +4,7 @@
 
 ## About
 
-indieTube is a crowd-sourced filter using YouTube's [Data API](https://developers.google.com/youtube/v3/) to show only independent content creators and filter out everything else. Check it out [here](indietube.netlify.app)!
+indieTube is a crowd-sourced filter using YouTube's [Data API](https://developers.google.com/youtube/v3/) to show only independent content creators and filter out everything else. Check it out [here](www.indietube.netlify.app)!
 
 ## Technologies
 
