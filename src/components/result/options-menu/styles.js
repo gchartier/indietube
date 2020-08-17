@@ -49,4 +49,6 @@ export const MenuButton = styled.button`
     width: 100%;
     text-align: left;
     padding: 0;
+    color: black;
+    font-weight: 600;
 `;
