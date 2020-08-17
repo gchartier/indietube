@@ -2,13 +2,14 @@ import styled from "styled-components";
 
 export const StyledHeader = styled.header`
     display: flex;
+    justify-content: space-between;
     position: relative;
     text-align: left;
-    justify-content: space-between;
     padding: 2%;
     box-shadow: 0px 5px 10px -10px rgba(0, 0, 0, 0.5);
+    background-color: ${(props) => props.theme.bgColorPrimary};
 
-    @media (max-width: 500px) {
+    @media (max-width: 594px) {
         flex-wrap: wrap;
     }
 `;
@@ -19,7 +20,7 @@ export const H1 = styled.h1`
 `;
 
 export const PrimarySpan = styled.span`
-    color: #f4b400;
+    color: ${(props) => props.theme.primaryYellow};
 `;
 
 export const Nav = styled.nav`
@@ -40,6 +41,6 @@ export const NavItem = styled.li`
     list-style: none;
     cursor: pointer;
     font-weight: bold;
-    color: #f4b400;
+    color: ${(props) => props.theme.primaryYellow};
     font-size: 1.3rem;
 `;

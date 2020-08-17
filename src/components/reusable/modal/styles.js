@@ -36,7 +36,7 @@ export const ModalBody = styled.div`
     margin: 0 auto;
     text-align: left;
     z-index: 101;
-    background-color: #ffce80;
+    background-color: ${(props) => props.theme.accentYellow};
     border-radius: 15px;
     box-shadow: 0 16px 24px 2px rgba(0, 0, 0, 0.14);
     padding: 2rem;
