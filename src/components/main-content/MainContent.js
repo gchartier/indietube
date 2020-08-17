@@ -87,7 +87,6 @@ export default function MainContent(props) {
     );
 
     const getSearchResults = useCallback(async () => {
-        console.log("SEARCHING...");
         const videoIds = [];
         const indieResults = [];
         const resultsBuffer = [];
