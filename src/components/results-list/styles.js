@@ -10,5 +10,5 @@ export const StyledResults = styled.div`
     width: 100%;
     min-height: 0;
     overflow: scroll;
-    background-color: whitesmoke;
+    background-color: ${(props) => props.theme.bgColorSecondary};
 `;

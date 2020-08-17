@@ -1,7 +1,11 @@
 import React from "react";
 import * as ui from "./styles";
+import { useContext } from "react";
+import { ThemeContext } from "styled-components";
 
-export default function Footer() {
+export default function Footer(props) {
+    const themeContext = useContext(ThemeContext);
+
     return (
         <ui.StyledFooter>
             <ui.P>
@@ -9,7 +13,7 @@ export default function Footer() {
                     <span>
                         Built by{" "}
                         <ui.SiteLink
-                            color="#0F9D58"
+                            color={themeContext.primaryGreen}
                             href="https://gabrielchartier.dev"
                             target="_blank"
                         >
@@ -19,7 +23,7 @@ export default function Footer() {
                     <span>
                         &nbsp;using the{" "}
                         <ui.SiteLink
-                            color="#DB4437"
+                            color={themeContext.primaryRed}
                             href="https://developers.google.com/youtube/v3/"
                             target="_blank"
                         >
@@ -28,7 +32,7 @@ export default function Footer() {
                     </span>
                 </ui.FlexContainer>
                 <ui.SiteLink
-                    color="#4285F4"
+                    color={themeContext.primaryBlue}
                     target="_blank"
                     href="https://www.buymeacoffee.com/gabrielchartier"
                 >

@@ -5,7 +5,7 @@ export const StyledMainContent = styled.div`
     flex-direction: column;
     align-items: center;
     flex-grow: 1;
-    background-color: whitesmoke;
+    background-color: ${(props) => props.theme.bgColorSecondary};
     min-height: 0;
     width: 100%;
 `;

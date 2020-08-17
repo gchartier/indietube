@@ -9,8 +9,25 @@ export const GlobalStyles = createGlobalStyle`
 `;
 
 export const StyledApp = styled.div`
-    background-color: white;
     display: flex;
     flex-direction: column;
     height: 100vh;
 `;
+
+export const lightTheme = {
+    bgColorPrimary: "white",
+    bgColorSecondary: "whitesmoke",
+    primaryYellow: "#f4b400",
+    accentYellow: "#ffce80",
+    primaryGreen: "#0F9D58",
+    primaryBlue: "#4285F4",
+    primaryRed: "#DB4437",
+    borderColor: "#d3d3d3",
+    menuColor: "#f7f7f7",
+    menuColorHover: "#ededed",
+};
+
+export const darkTheme = {
+    backgroundColorPrimary: "white",
+    backgroundColorSecondary: "whitesmoke",
+};

@@ -20,7 +20,7 @@ export const Menu = styled.ul`
     z-index: 2;
     border: 1px solid rgba(0, 0, 0, 0.04);
     box-shadow: 0 16px 24px 2px rgba(0, 0, 0, 0.14);
-    background-color: #f7f7f7;
+    background-color: ${(props) => props.theme.menuColor};
 `;
 
 export const MenuItem = styled.li`
@@ -28,7 +28,7 @@ export const MenuItem = styled.li`
     padding: 8px;
 
     &:hover {
-        background-color: #ededed;
+        background-color: ${(props) => props.theme.menuColorHover};
     }
 
     & a {
