@@ -21,6 +21,7 @@ export default function App() {
                         setSubmitSearch(true);
                     }}
                     nonIndieCount={nonIndieCount}
+                    handleThemeChange={setStyleTheme}
                 />
                 <MainContent
                     setNonIndieCount={setNonIndieCount}

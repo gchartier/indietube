@@ -301,4 +301,22 @@ export const CHANNEL_FILTER_LIST = [
         channelId: "UCplFzk41GPh1gGjDLbQ4qtA",
     },
     { channelName: "Us Weekly", channelId: "UCVxZlxikHMY8LzspzinH1ww" },
+    { channelName: "Tasty", channelId: "UCJFp8uSYCjXOMnkUyb3CQ3Q" },
+    {
+        channelName: "Eyewitness News ABC7NY",
+        channelId: "UCrlIS7z20CnVaCrMvdkig_g",
+    },
+    { channelName: "CNBC", channelId: "UCvJJ_dzjViJCoLf5uKUTwoA" },
+    { channelName: "ET Canada", channelId: "UCKY5PiEq8Tl9r7f3qittXng" },
+    { channelName: "VICE", channelId: "UCn8zNIfYAQNdrFRrr8oibKw" },
+    { channelName: "ABC10", channelId: "UCT350j4u6alUKyF9eu2bGug" },
+    {
+        channelName: "Power 106 Los Angeles",
+        channelId: "UCBKIrKI8ezApiTVkEknu6xg",
+    },
+    { channelName: "KQED News", channelId: "UC0FISFbEaHFc5ccrIgkZ3mg" },
+    { channelName: "News 19 WLTX", channelId: "UCVaXclURQZlakiTMzuwHvRw" },
+    { channelName: "Quibi", channelId: "UCR4sKQm7_z8IrZ79O7v10ng" },
+    { channelName: "MLive", channelId: "UClmFQfVyDvdtCralM-Oo_mw" },
+    { channelName: "Los Angeles Times", channelId: "UCw3SYO_euO0TSPC_m_0Pzgw" },
 ];
