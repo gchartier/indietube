@@ -9,7 +9,7 @@ export default function formatVideoDuration(duration) {
     else {
         formattedDuration = moment
             .duration(formattedDuration)
-            .format("hh:mm:ss");
+            .format("h:mm:ss");
         if (formattedDuration.length < 3)
             formattedDuration = "0:" + formattedDuration;
     }
