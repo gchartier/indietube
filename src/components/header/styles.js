@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { Link } from "react-router-dom";
 
 export const StyledHeader = styled.header`
     display: flex;
@@ -32,6 +33,7 @@ export const Nav = styled.nav`
 
 export const NavList = styled.ul`
     display: flex;
+    justify-content: space-around;
     padding: 0;
     margin: 0;
 `;
@@ -43,4 +45,10 @@ export const NavItem = styled.li`
     font-weight: bold;
     color: ${(props) => props.theme.primaryYellow};
     font-size: 1.3rem;
+    white-space: nowrap;
+`;
+
+export const StyledLink = styled(Link)`
+    color: inherit;
+    text-decoration: none;
 `;

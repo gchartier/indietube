@@ -1,8 +1,7 @@
 import React, { useState, Fragment } from "react";
 import * as ui from "./styles";
-import { useTransition, animated } from "react-spring";
+import { useTransition } from "react-spring";
 import hamburgerMenuBlack from "../../assets/hamburgerMenu-black.svg";
-import hamburgerMenuWhite from "../../assets/hamburgerMenu-white.svg";
 
 export default function HamburgerMenu(props) {
     const [drawerIsOpen, setDrawerIsOpen] = useState(false);
@@ -32,12 +31,23 @@ export default function HamburgerMenu(props) {
                                     <ui.NavItem
                                         onClick={() => setDrawerIsOpen(false)}
                                     >
-                                        About
+                                        <ui.StyledLink to="/">
+                                            Home
+                                        </ui.StyledLink>
                                     </ui.NavItem>
                                     <ui.NavItem
                                         onClick={() => setDrawerIsOpen(false)}
                                     >
-                                        View Filter
+                                        <ui.StyledLink to="/About">
+                                            About
+                                        </ui.StyledLink>
+                                    </ui.NavItem>
+                                    <ui.NavItem
+                                        onClick={() => setDrawerIsOpen(false)}
+                                    >
+                                        <ui.StyledLink to="/Filter">
+                                            View Filter
+                                        </ui.StyledLink>
                                     </ui.NavItem>
                                 </ui.NavList>
                             </ui.Nav>
