@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { animated } from "react-spring";
+import { Link } from "react-router-dom";
 
 export const Icon = styled.img`
     position: relative;
@@ -58,4 +59,9 @@ export const NavItem = styled.li`
     color: ${(props) => props.theme.primaryYellow};
     font-size: 1.3rem;
     margin: 10% 0;
+`;
+
+export const StyledLink = styled(Link)`
+    color: inherit;
+    text-decoration: none;
 `;

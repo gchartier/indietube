@@ -2,8 +2,11 @@ import React, { useState } from "react";
 import Header from "./components/header/Header";
 import Footer from "./components/footer/Footer";
 import MainContent from "./components/main-content/MainContent";
+import About from "./components/about/About";
+import Filter from "./components/filter/Filter";
 import { GlobalStyles, StyledApp, lightTheme, darkTheme } from "./globalStyles";
 import { ThemeProvider } from "styled-components";
+import { Route, Switch, Redirect } from "react-router-dom";
 
 export default function App() {
     const [searchQuery, setSearchQuery] = useState("");
@@ -23,13 +26,24 @@ export default function App() {
                     nonIndieCount={nonIndieCount}
                     handleThemeChange={setStyleTheme}
                 />
-                <MainContent
-                    setNonIndieCount={setNonIndieCount}
-                    nonIndieCount={nonIndieCount}
-                    submitSearch={submitSearch}
-                    setSubmitSearch={setSubmitSearch}
-                    searchQuery={searchQuery}
-                />
+                <Switch>
+                    <Route
+                        path="/"
+                        exact
+                        render={() => (
+                            <MainContent
+                                setNonIndieCount={setNonIndieCount}
+                                nonIndieCount={nonIndieCount}
+                                submitSearch={submitSearch}
+                                setSubmitSearch={setSubmitSearch}
+                                searchQuery={searchQuery}
+                            />
+                        )}
+                    />
+                    <Route path="/About" component={About} />
+                    <Route path="/Filter" component={Filter} />
+                    <Redirect to="/" />
+                </Switch>
                 <Footer />
                 <GlobalStyles />
             </StyledApp>

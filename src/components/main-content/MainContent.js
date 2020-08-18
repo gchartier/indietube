@@ -5,7 +5,7 @@ import { CHANNEL_FILTER_LIST } from "../../utilities/channelFilter";
 import HTTPException from "../../utilities/exceptions";
 import formatVideoDuration from "../../utilities/formatVideoDuration";
 import ResultList from "../results-list/ResultsList";
-import Loading from "../reusable/loading/Loading";
+import Loading from "../loading/Loading";
 import NoResults from "../no-results/NoResults";
 import {
     API_SEARCH_URL,
