@@ -10,6 +10,7 @@ indieTube is a crowd-sourced filter using YouTube's [Data API](https://developer
 
 -   React.js
 -   Styled-Components / CSS
+-   React-Spring
 -   [YouTube Data API v3](https://developers.google.com/youtube/v3/)
 -   Sketch
 -   Netlify Forms
