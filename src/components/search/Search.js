@@ -21,7 +21,9 @@ export default function Search(props) {
                         </ui.ResultsFiltered>
                     )}
                 </ui.InputFields>
-                <ui.SearchIcon type="submit" alt="Submit Search" />
+                <ui.SearchButtonBox>
+                    <ui.SearchIcon type="submit" alt="Submit Search" />
+                </ui.SearchButtonBox>
             </ui.InputContainer>
         </ui.SearchForm>
     );

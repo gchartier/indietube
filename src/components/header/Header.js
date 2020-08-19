@@ -3,15 +3,15 @@ import { useMediaPredicate } from "react-media-hook";
 import * as ui from "./styles";
 import Search from "../search/Search";
 import HamburgerMenu from "../hamburger-menu/HamburgerMenu";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 export default function Header(props) {
-    const isMobile = useMediaPredicate("(max-width: 400px)");
+    const isMobile = useMediaPredicate("(max-width: 900px)");
 
     return (
         <ui.StyledHeader>
             <ui.H1>
-                <ui.StyledLink>
+                <ui.StyledLink to="/">
                     indie<ui.PrimarySpan>Tube</ui.PrimarySpan>
                 </ui.StyledLink>
             </ui.H1>
@@ -32,12 +32,13 @@ export default function Header(props) {
                 <ui.Nav>
                     <ui.NavList>
                         <ui.NavItem>
+                            <ui.StyledLink to="/">Search</ui.StyledLink>
+                        </ui.NavItem>
+                        <ui.NavItem>
                             <ui.StyledLink to="/About">About</ui.StyledLink>
                         </ui.NavItem>
                         <ui.NavItem>
-                            <ui.StyledLink to="/Filter">
-                                View Filter
-                            </ui.StyledLink>
+                            <ui.StyledLink to="/Filter">Filter</ui.StyledLink>
                         </ui.NavItem>
                     </ui.NavList>
                 </ui.Nav>

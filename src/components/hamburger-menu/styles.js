@@ -5,7 +5,8 @@ import { Link } from "react-router-dom";
 export const Icon = styled.img`
     position: relative;
     z-index: 1020;
-    width: 15%;
+    width: 4rem;
+    height: 4rem;
 `;
 
 export const NavDrawer = styled(animated.div)`
@@ -57,8 +58,11 @@ export const NavItem = styled.li`
     cursor: pointer;
     font-weight: bold;
     color: ${(props) => props.theme.primaryYellow};
-    font-size: 1.3rem;
+    font-size: ${(props) => props.theme.navLinkSize};
     margin: 10% 0;
+    &:hover {
+        color: black;
+    }
 `;
 
 export const StyledLink = styled(Link)`
