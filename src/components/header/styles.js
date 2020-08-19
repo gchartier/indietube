@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 export const StyledHeader = styled.header`
     display: flex;
     justify-content: space-between;
+    align-items: center;
     position: relative;
     text-align: left;
     padding: 2%;
@@ -16,8 +17,8 @@ export const StyledHeader = styled.header`
 `;
 
 export const H1 = styled.h1`
-    font-size: 2rem;
-    margin: 0;
+    font-size: 2.2rem;
+    margin: 0 2%;
 `;
 
 export const PrimarySpan = styled.span`
@@ -26,9 +27,7 @@ export const PrimarySpan = styled.span`
 
 export const Nav = styled.nav`
     display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0;
+    margin: 0 2%;
 `;
 
 export const NavList = styled.ul`
@@ -36,6 +35,7 @@ export const NavList = styled.ul`
     justify-content: space-around;
     padding: 0;
     margin: 0;
+    width: 100%;
 `;
 
 export const NavItem = styled.li`
@@ -43,9 +43,13 @@ export const NavItem = styled.li`
     list-style: none;
     cursor: pointer;
     font-weight: bold;
-    color: ${(props) => props.theme.primaryYellow};
-    font-size: 1.3rem;
+    font-size: ${(props) => props.theme.navLinkSize};
     white-space: nowrap;
+    padding: 0 5%;
+    color: ${(props) => props.theme.primaryYellow};
+    &:hover {
+        color: black;
+    }
 `;
 
 export const StyledLink = styled(Link)`

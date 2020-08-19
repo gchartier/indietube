@@ -1,5 +1,15 @@
 import React from "react";
+import { CHANNEL_FILTER_LIST } from "../../utilities/channelFilter";
+import * as ui from "./styles";
 
-export default function Filter(props) {
-    return <h1>HELLO! - Filter</h1>;
+export default function Filter() {
+    return (
+        <ui.FilterListContainer>
+            <ui.FilterList>
+                {CHANNEL_FILTER_LIST.map((channel, index) => (
+                    <li key={index}>{channel.channelName}</li>
+                ))}
+            </ui.FilterList>
+        </ui.FilterListContainer>
+    );
 }

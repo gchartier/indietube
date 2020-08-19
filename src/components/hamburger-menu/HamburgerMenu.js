@@ -32,7 +32,7 @@ export default function HamburgerMenu(props) {
                                         onClick={() => setDrawerIsOpen(false)}
                                     >
                                         <ui.StyledLink to="/">
-                                            Home
+                                            Search
                                         </ui.StyledLink>
                                     </ui.NavItem>
                                     <ui.NavItem
@@ -46,7 +46,7 @@ export default function HamburgerMenu(props) {
                                         onClick={() => setDrawerIsOpen(false)}
                                     >
                                         <ui.StyledLink to="/Filter">
-                                            View Filter
+                                            Filter
                                         </ui.StyledLink>
                                     </ui.NavItem>
                                 </ui.NavList>

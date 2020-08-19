@@ -8,4 +8,6 @@ export const SubHeading = styled.h2`
 
 export const AboutContainer = styled.div`
     padding: 2rem;
+    background-color: ${(props) => props.theme.bgColorSecondary};
+    overflow-y: scroll;
 `;

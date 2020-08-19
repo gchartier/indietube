@@ -4,7 +4,7 @@ import searchIcon from "../../assets/search.svg";
 export const SearchForm = styled.form`
     width: 100%;
     background-color: ${(props) => props.theme.bgColorPrimary};
-
+    align-self: center;
     @media (max-width: 594px) {
         order: 3;
         padding: 3% 0;
@@ -15,14 +15,15 @@ export const InputContainer = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100%;
+    width: 95%;
+    margin: 0 auto;
 `;
 
 export const InputFields = styled.div`
     display: flex;
     flex-direction: column;
     max-width: 500px;
-    width: 60%;
+    width: 90%;
 `;
 
 export const SearchInput = styled.input`
@@ -30,21 +31,26 @@ export const SearchInput = styled.input`
     border: solid 1px ${(props) => props.theme.borderColor};
     background-color: ${(props) => props.theme.bgColorPrimary};
     box-shadow: 0 6px 24px 2px rgba(0, 0, 0, 0.14);
-    padding: 10px;
-    height: 1rem;
-    font-size: 1.5rem;
+    height: 2rem;
+    font-size: large;
 `;
 
 export const SearchIcon = styled.button`
-    margin: 0 2% 0 2%;
     cursor: pointer;
     background-image: url(${searchIcon});
-    background-size: cover;
     background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
     border: none;
     width: 2.2rem;
     height: 2.2rem;
     background-color: transparent;
+    margin: 0;
+    padding: 0;
+`;
+
+export const SearchButtonBox = styled.div`
+    margin: 0 1% 0 2%;
     align-self: flex-start;
 `;
 

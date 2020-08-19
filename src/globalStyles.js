@@ -18,6 +18,7 @@ export const lightTheme = {
     bgColorPrimary: "white",
     bgColorSecondary: "whitesmoke",
     primaryYellow: "#f4b400",
+    primaryYellowDark: "#dba200",
     accentYellow: "#ffce80",
     primaryGreen: "#0F9D58",
     primaryBlue: "#4285F4",
@@ -25,6 +26,7 @@ export const lightTheme = {
     borderColor: "#d3d3d3",
     menuColor: "#f7f7f7",
     menuColorHover: "#ededed",
+    navLinkSize: "1.5rem",
 };
 
 export const darkTheme = {
