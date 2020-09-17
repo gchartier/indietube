@@ -10,14 +10,36 @@
         />
         <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
         <link
+            crossorigin
+            rel="preload"
             href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@500&display=swap"
-            rel="stylesheet"
+            as="style"
+            onload="this.onload=null;this.rel='stylesheet'"
         />
+        <noscript>
+            <link
+                rel="stylesheet"
+                href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap"
+            />
+        </noscript>
+
         <title>indieTube</title>
     </head>
     <body>
         <noscript>You need to enable JavaScript to run this app.</noscript>
         <div id="root"></div>
         <div id="modal"></div>
+        <script>
+            var isIE = !!window.MSInputMethodContext && !!document.documentMode;
+            var isFirefox = navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
+
+            if (isIE || isFirefox) {
+                var pageStylesheet = document.createElement("link");
+                pageStylesheet.rel = "stylesheet";
+                pageStylesheet.type = "text/css";
+                pageStylesheet.href = "/path/to/styles.css";
+                document.head.appendChild(pageStylesheet);
+            }
+        </script>
     </body>
 </html>
