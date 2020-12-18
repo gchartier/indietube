@@ -1,5 +1,4 @@
-# indieTube
-A Creator-focused YouTube Filter
+# indieTube - A Creator-focused YouTube Filter
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/e73bb3aa-4063-4b5f-bd5a-1745cc9bbf4f/deploy-status)](https://app.netlify.com/sites/indietube/deploys)
 
