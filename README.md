@@ -16,11 +16,11 @@ indieTube is a crowd-sourced filter using YouTube's [Data API](https://developer
 
 ## Problem
 
-Over the years, YouTube has transitioned from a community-driven site with independent creators at the forefront, to an overly-corporatized, advertisement controlled platform where the indie content creators are buried under page after page of corporations.
+Over the years, YouTube has transitioned from a community-driven site with independent creators at the forefront, to an overly-corporatized, advertisement controlled platform where the indie content creators are buried under page after page of news highlights, advertisements, and corporate content.
 
 ## Action
 
-I decided to build a React web application to address the issue for myself (and hopefully others) that consumes YouTube's Data API, filters the results, and allows the user to flag results that are not "indie" if they see any.
+I decided to build a client-side React web application to address the issue for myself (and hopefully others) that consumes YouTube's Data API, filters the results, and allows the user to flag results that are not "indie" if they see any.
 
 ## Result
 
@@ -28,7 +28,6 @@ indieTube can be used today to search YouTube when the search term is expected t
 
 ## Future Developments
 
--   Clean up UI
 -   Add a dark mode
 -   Preserve results when visiting other pages
 -   Replace "not indie" alert dialog with disappearing message
