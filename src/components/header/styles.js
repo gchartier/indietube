@@ -1,5 +1,5 @@
-import styled from "styled-components";
-import { Link } from "react-router-dom";
+import styled from "styled-components"
+import { Link } from "react-router-dom"
 
 export const StyledHeader = styled.header`
     display: flex;
@@ -14,21 +14,21 @@ export const StyledHeader = styled.header`
     @media (max-width: 594px) {
         flex-wrap: wrap;
     }
-`;
+`
 
 export const H1 = styled.h1`
-    font-size: 2.2rem;
+    font-size: 1.5rem;
     margin: 0 2%;
-`;
+`
 
 export const PrimarySpan = styled.span`
     color: ${(props) => props.theme.primaryYellow};
-`;
+`
 
 export const Nav = styled.nav`
     display: flex;
     margin: 0 2%;
-`;
+`
 
 export const NavList = styled.ul`
     display: flex;
@@ -36,7 +36,7 @@ export const NavList = styled.ul`
     padding: 0;
     margin: 0;
     width: 100%;
-`;
+`
 
 export const NavItem = styled.li`
     text-decoration: none;
@@ -50,9 +50,8 @@ export const NavItem = styled.li`
     &:hover {
         color: black;
     }
-`;
+`
 
 export const StyledLink = styled(Link)`
     color: inherit;
-    text-decoration: none;
-`;
+`

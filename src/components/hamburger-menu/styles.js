@@ -1,13 +1,14 @@
-import styled from "styled-components";
-import { animated } from "react-spring";
-import { Link } from "react-router-dom";
+import styled from "styled-components"
+import { animated } from "react-spring"
+import { Link } from "react-router-dom"
 
 export const Icon = styled.img`
     position: relative;
     z-index: 1020;
-    width: 4rem;
-    height: 4rem;
-`;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding-left: 1rem;
+`
 
 export const NavDrawer = styled(animated.div)`
     position: absolute;
@@ -18,7 +19,7 @@ export const NavDrawer = styled(animated.div)`
     width: 75%;
     height: 100vh;
     box-shadow: -8px 0px 16px -6px rgba(0, 0, 0, 0.75);
-`;
+`
 
 export const Overlay = styled(animated.div)`
     position: fixed;
@@ -32,7 +33,7 @@ export const Overlay = styled(animated.div)`
     z-index: 1000;
     background: rgba(0, 0, 0, 0.5);
     transition: opacity 200ms;
-`;
+`
 
 export const Nav = styled.nav`
     display: flex;
@@ -41,7 +42,7 @@ export const Nav = styled.nav`
     align-items: center;
     margin: 0;
     height: 100%;
-`;
+`
 
 export const NavList = styled.ul`
     display: flex;
@@ -50,7 +51,7 @@ export const NavList = styled.ul`
     align-items: center;
     padding: 0;
     margin: 0;
-`;
+`
 
 export const NavItem = styled.li`
     text-decoration: none;
@@ -63,9 +64,9 @@ export const NavItem = styled.li`
     &:hover {
         color: black;
     }
-`;
+`
 
 export const StyledLink = styled(Link)`
     color: inherit;
     text-decoration: none;
-`;
+`

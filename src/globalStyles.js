@@ -1,4 +1,4 @@
-import styled, { createGlobalStyle } from "styled-components";
+import styled, { createGlobalStyle } from "styled-components"
 
 export const GlobalStyles = createGlobalStyle`
   body {
@@ -6,13 +6,13 @@ export const GlobalStyles = createGlobalStyle`
     margin: 0;
     padding: 0;
   }
-`;
+`
 
 export const StyledApp = styled.div`
     display: flex;
     flex-direction: column;
     height: 100vh;
-`;
+`
 
 export const lightTheme = {
     bgColorPrimary: "white",
@@ -26,10 +26,10 @@ export const lightTheme = {
     borderColor: "#d3d3d3",
     menuColor: "#f7f7f7",
     menuColorHover: "#ededed",
-    navLinkSize: "1.5rem",
-};
+    navLinkSize: "1.2rem",
+}
 
 export const darkTheme = {
     backgroundColorPrimary: "white",
     backgroundColorSecondary: "whitesmoke",
-};
+}
